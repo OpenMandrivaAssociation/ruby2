@@ -4,7 +4,7 @@ Version:	1.8.6
 %define		subver 1.8
 Release: 	%mkrel 1
 License:	GPL
-Group:		Development/Other
+Group:		Development/Ruby
 BuildRequires:	autoconf2.5
 BuildRequires:	byacc
 BuildRequires:	ncurses-devel
@@ -23,6 +23,8 @@ Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 Source3:	ruby.macros
 Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
+# Fix the dot -V parsing for recent grphviz
+Patch2:		ruby-rdoc_graphviz.patch
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
@@ -39,17 +41,17 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %package	doc
 Summary:	Documentation for the powerful language Ruby
-Group:		Development/Other
+Group:		Development/Ruby
 Requires:	%{name} = %{version}
 
 %package	devel
 Summary:	Development file for the powerful language Ruby
-Group:		Development/Other
+Group:		Development/Ruby
 Requires:	%{name} = %{version}
 
 %package	tk
 Summary:	Tk extension for the powerful language Ruby
-Group:		Development/Other
+Group:		Development/Ruby
 Requires:	%{name} = %{version}
 
 %description
@@ -86,6 +88,7 @@ This package contains the Tk extension for Ruby.
 %setup -q
 %patch0 -p0 -b .lib64
 %patch1 -p0 -b .ri
+%patch2 -p0 -b .graphviz
 
 sed -i -e "s,| sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/',," configure.in
 
