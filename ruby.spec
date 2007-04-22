@@ -14,6 +14,8 @@ BuildRequires:	db4.2-devel
 BuildRequires:  libgdbm-devel >= 1.8.3
 BuildRequires:  openssl-devel
 BuildRequires:	zlib1-devel
+# Should be required by tk-devel instead
+BuildRequires:	libx11-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
 
