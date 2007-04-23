@@ -2,7 +2,7 @@ Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.6
 %define		subver 1.8
-Release: 	%mkrel 2
+Release: 	%mkrel 3
 License:	GPL
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
@@ -14,8 +14,7 @@ BuildRequires:	db4.2-devel
 BuildRequires:  libgdbm-devel >= 1.8.3
 BuildRequires:  openssl-devel
 BuildRequires:	zlib1-devel
-# Should be required by tk-devel instead
-BuildRequires:	libx11-devel
+BuildRequires:	tk-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
 
