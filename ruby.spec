@@ -2,7 +2,7 @@ Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.6
 %define		subver 1.8
-Release: 	%mkrel 3
+Release: 	%mkrel 4
 License:	GPL
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
@@ -25,6 +25,8 @@ Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 # Fix the dot -V parsing for recent grphviz
 Patch2:		ruby-rdoc_graphviz.patch
+# Fix REXML wrongly saving XML special chars as entities
+Patch3: ruby-1.8.6-fix-rexml-double-encoding.patch
 URL:		http://www.ruby-lang.org/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
@@ -89,6 +91,7 @@ This package contains the Tk extension for Ruby.
 %patch0 -p0 -b .lib64
 %patch1 -p0 -b .ri
 %patch2 -p0 -b .graphviz
+%patch3 -p0
 
 sed -i -e "s,| sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/',," configure.in
 
@@ -192,5 +195,4 @@ rm -rf %buildroot
 %{_prefix}/lib/%{name}/%{subver}/tcltk*
 %{_prefix}/lib/%{name}/%{subver}/tk*
 %{_prefix}/lib/%{name}/%{subver}/test/unit/ui/tk
-
 
