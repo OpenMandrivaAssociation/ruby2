@@ -2,7 +2,7 @@ Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.6
 %define		subver 1.8
-Release: 	%mkrel 4
+Release: 	%mkrel 5
 License:	GPL
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
