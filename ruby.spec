@@ -28,7 +28,6 @@ Patch2:		ruby-rdoc_graphviz.patch
 # Fix REXML wrongly saving XML special chars as entities
 Patch3: ruby-1.8.6-fix-rexml-double-encoding.patch
 URL:		http://www.ruby-lang.org/
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %define my_target_cpu %{_target_cpu}
 %ifarch ppc
