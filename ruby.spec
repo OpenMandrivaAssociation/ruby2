@@ -2,7 +2,7 @@ Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.6
 %define		subver 1.8
-Release: 	%mkrel 5
+Release: 	%mkrel 6
 License:	GPL
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
@@ -10,7 +10,7 @@ BuildRequires:	byacc
 BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
 BuildRequires:	tcl-devel tk-devel
-BuildRequires:	db4.2-devel
+BuildRequires:	db4-devel
 BuildRequires:  libgdbm-devel >= 1.8.3
 BuildRequires:  openssl-devel
 BuildRequires:	zlib1-devel
@@ -28,6 +28,7 @@ Patch2:		ruby-rdoc_graphviz.patch
 # Fix REXML wrongly saving XML special chars as entities
 Patch3: ruby-1.8.6-fix-rexml-double-encoding.patch
 URL:		http://www.ruby-lang.org/
+Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
 %define my_target_cpu %{_target_cpu}
 %ifarch ppc
