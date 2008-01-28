@@ -1,8 +1,10 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.6
+%define		patchversion p111
+%define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
-Release: 	%mkrel 6
+Release: 	%mkrel 7
 License:	GPL
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
@@ -17,16 +19,13 @@ BuildRequires:	zlib1-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
 
-Source0:	ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{version}.tar.bz2
+Source0:	ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{version}%{pversion}.tar.bz2
 Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
 Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 Source3:	ruby.macros
 Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
-# Fix the dot -V parsing for recent grphviz
-Patch2:		ruby-rdoc_graphviz.patch
-# Fix REXML wrongly saving XML special chars as entities
-Patch3: ruby-1.8.6-fix-rexml-double-encoding.patch
+Patch2:		ruby-1.8.5-CVE-2007-5770.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -44,7 +43,6 @@ Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 %package	doc
 Summary:	Documentation for the powerful language Ruby
 Group:		Development/Ruby
-Requires:	%{name} = %{version}
 
 %package	devel
 Summary:	Development file for the powerful language Ruby
@@ -87,11 +85,10 @@ Perl). It is simple, straight-forward, and extensible.
 This package contains the Tk extension for Ruby.
 
 %prep
-%setup -q
+%setup -q -n ruby-%{version}%{pversion}
 %patch0 -p0 -b .lib64
 %patch1 -p0 -b .ri
-%patch2 -p0 -b .graphviz
-%patch3 -p0
+%patch2 -p0 -b .cve-2007-5770
 
 sed -i -e "s,| sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/',," configure.in
 
