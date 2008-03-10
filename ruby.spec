@@ -1,11 +1,12 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.6
-%define		patchversion p111
+%define		patchversion p114
 %define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
-Release: 	%mkrel 8
-License:	GPL
+# increase the release number, patchversion is here just to make it visible
+Release: 	%mkrel 9%patchversion
+License:	Ruby or GPLv2
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
 BuildRequires:	byacc
@@ -26,7 +27,6 @@ Source3:	ruby.macros
 Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-1.8.5-CVE-2007-5770.patch
-Patch3:		ruby-1.8.6-p111-rexml-trans.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -90,7 +90,6 @@ This package contains the Tk extension for Ruby.
 %patch0 -p0 -b .lib64
 %patch1 -p0 -b .ri
 %patch2 -p0 -b .cve-2007-5770
-%patch3 -p1 -b .trans
 
 sed -i -e "s,| sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/',," configure.in
 
