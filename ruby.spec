@@ -5,7 +5,7 @@ Version:	1.8.6
 %define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
 # increase the release number, patchversion is here just to make it visible
-Release: 	%mkrel 9%patchversion
+Release: 	%mkrel 10%patchversion
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
@@ -27,6 +27,7 @@ Source3:	ruby.macros
 Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-1.8.5-CVE-2007-5770.patch
+Patch25:	ruby-1.8.6.111-gcc43.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -90,6 +91,7 @@ This package contains the Tk extension for Ruby.
 %patch0 -p0 -b .lib64
 %patch1 -p0 -b .ri
 %patch2 -p0 -b .cve-2007-5770
+%patch25 -p1
 
 sed -i -e "s,| sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/',," configure.in
 
