@@ -5,7 +5,7 @@ Version:	1.8.6
 %define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
 # increase the release number, patchversion is here just to make it visible
-Release: 	%mkrel 11%patchversion
+Release: 	%mkrel 12%patchversion
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
