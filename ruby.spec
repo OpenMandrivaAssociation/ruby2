@@ -5,7 +5,7 @@ Version:	1.8.6
 %define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
 # increase the release number, patchversion is here just to make it visible
-Release: 	%mkrel 10%patchversion
+Release: 	%mkrel 11%patchversion
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
@@ -28,6 +28,10 @@ Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-1.8.5-CVE-2007-5770.patch
 Patch25:	ruby-1.8.6.111-gcc43.patch
+# Some tk functions are marked "MODULE_SCOPE" in tk-8.5, and gcc-4.3
+# enforces(?) that now. Patch from snippets of
+# http://svn.ruby-lang.org/cgi-bin/viewvc.cgi/trunk/ext/tk/tcltklib.c?r1=13105&r2=14426
+Patch26:	ruby-1.8.6p114-mdv,svn-tk85-gcc43.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -92,6 +96,7 @@ This package contains the Tk extension for Ruby.
 %patch1 -p0 -b .ri
 %patch2 -p0 -b .cve-2007-5770
 %patch25 -p1
+%patch26 -p1
 
 sed -i -e "s,| sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/',," configure.in
 
@@ -184,14 +189,14 @@ rm -rf %buildroot
 
 %files devel
 %defattr(-, root, root)
-%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_host_os}/*.[ah]
+%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/*.[ah]
 %{_libdir}/libruby-static.a
 %{_libdir}/libruby.so
 
 %files tk
 %defattr(-, root, root)
-%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_host_os}/tcltk*
-%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_host_os}/tk*
+%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/tcltk*
+%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/tk*
 %{_prefix}/lib/%{name}/%{subver}/tcltk*
 %{_prefix}/lib/%{name}/%{subver}/tk*
 %{_prefix}/lib/%{name}/%{subver}/test/unit/ui/tk
