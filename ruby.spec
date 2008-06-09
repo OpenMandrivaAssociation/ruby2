@@ -26,6 +26,7 @@ Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 Source3:	ruby.macros
 Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
+Patch2:		ruby-add-old-os-to-search-path.patch
 Patch25:	ruby-1.8.6.111-gcc43.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
@@ -89,7 +90,10 @@ This package contains the Tk extension for Ruby.
 %setup -q -n ruby-%{version}%{pversion}
 %patch0 -p0 -b .lib64
 %patch1 -p0 -b .ri
+%patch2 -p2 -b .old
 %patch25 -p1
+
+autoreconf
 
 %build
 echo '.text' | gcc -shared -o libdummy.so.0 -xassembler - -ltcl -ltk >& /dev/null && {
@@ -101,7 +105,11 @@ echo '.text' | gcc -shared -o libdummy.so.0 -xassembler - -ltcl -ltk >& /dev/nul
 }
 
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
-%configure2_5x --enable-shared --disable-rpath --enable-pthread --with-sitedir=%_prefix/lib/ruby/site_ruby
+%configure2_5x --enable-shared --disable-rpath --enable-pthread \
+	--with-sitedir=%_prefix/lib/ruby/site_ruby \
+	--with-vendordir=%_prefix/lib/ruby/vendor_ruby \
+	--with-old-os=linux-gnu
+
 %make
 
 
@@ -130,7 +138,7 @@ EOF
   && find usr/lib/ruby/%{subver} \
           \( -not -type d -printf "/%%p\n" \) \
           -or \( -type d -printf "%%%%dir /%%p\n" \) \
-) | egrep -v '/(tcl)?tk|(%{my_target_cpu}-%{_host_os}/.*[ha]$)' > %{name}.list
+) | egrep -v '/(tcl)?tk|(%{my_target_cpu}-%{_target_os}/.*[ha]$)' > %{name}.list
 
 # Fix scripts permissions and location
 find %buildroot sample -type f | file -i -f - | grep text | cut -d: -f1 >text.list
