@@ -5,7 +5,7 @@ Version:	1.8.7
 %define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
 # increase the release number, patchversion is here just to make it visible
-Release: 	%mkrel 6%{?patchversion}
+Release: 	%mkrel 7%{?patchversion}
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 BuildRequires:	autoconf2.5
@@ -19,6 +19,8 @@ BuildRequires:  openssl-devel
 BuildRequires:	zlib1-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
+# explicit file provides (since such requires are automatically by find-requires)
+Provides: /usr/bin/ruby
 
 Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{version}%{pversion}.tar.bz2
 Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
