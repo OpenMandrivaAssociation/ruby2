@@ -19,7 +19,7 @@ BuildRequires:  openssl-devel
 BuildRequires:	zlib1-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
-# explicit file provides (since such requires are automatically by find-requires)
+# explicit file provides (since such requires are automatically added by find-requires)
 Provides: /usr/bin/ruby
 
 Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{version}%{pversion}.tar.bz2
