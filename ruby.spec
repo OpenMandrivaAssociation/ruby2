@@ -1,7 +1,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.7
-%define		patchversion p72
+%define		patchversion p160
 %define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
 # increase the release number, patchversion is here just to make it visible
@@ -30,7 +30,6 @@ Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-add-old-os-to-search-path.patch
 Patch3:		ruby-do_not_propagate_no-undefined.patch
-Patch25:	ruby-1.8.6.111-gcc43.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -95,7 +94,6 @@ This package contains the Tk extension for Ruby.
 %patch1 -p0 -b .ri
 %patch2 -p2 -b .old
 %patch3 -p2 -b .undefined
-%patch25 -p1
 
 autoreconf
 
