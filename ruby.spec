@@ -1,7 +1,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	1.8.7
-%define		patchversion p173
+%define		patchversion p174
 %define		pversion %{?patchversion:-%patchversion}
 %define		subver 1.8
 # increase the release number, patchversion is here just to make it visible
