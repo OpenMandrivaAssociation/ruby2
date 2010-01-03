@@ -1,11 +1,12 @@
+%define subver 1.8
+%define rubyver 1.8.7
+%define patchversion p248
+%define rel 1
+
 Summary:	Object Oriented Script Language
 Name:		ruby
-Version:	1.8.7
-%define		patchversion p174
-%define		pversion %{?patchversion:-%patchversion}
-%define		subver 1.8
-# increase the release number, patchversion is here just to make it visible
-Release: 	%mkrel 10%{?patchversion}
+Version:	%{rubyver}.%{patchversion}
+Release: 	%mkrel %rel
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 BuildRequires:	autoconf
@@ -22,7 +23,7 @@ Provides:	ruby-rexml
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides: /usr/bin/ruby
 
-Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{version}%{pversion}.tar.bz2
+Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
 Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
 Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 Source3:	ruby.macros
@@ -89,7 +90,7 @@ Perl). It is simple, straight-forward, and extensible.
 This package contains the Tk extension for Ruby.
 
 %prep
-%setup -q -n ruby-%{version}%{pversion}
+%setup -q -n ruby-%{rubyver}-%{patchversion}
 %patch0 -p0 -b .lib64
 %patch1 -p0 -b .ri
 %patch2 -p2 -b .old
