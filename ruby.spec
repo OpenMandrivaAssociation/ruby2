@@ -31,6 +31,9 @@ Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-add-old-os-to-search-path.patch
 Patch3:		ruby-do_not_propagate_no-undefined.patch
+#(peroyvind): fixes annoying '`*' interpreted as argument prefix' warning
+#             http://redmine.ruby-lang.org/issues/show/1485
+Patch4:		ruby-1.8.7-p249-fix-pathname-warning.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -95,6 +98,7 @@ This package contains the Tk extension for Ruby.
 %patch1 -p0 -b .ri
 %patch2 -p2 -b .old
 %patch3 -p2 -b .undefined
+%patch4 -p1 -b .warning~
 
 autoreconf
 
