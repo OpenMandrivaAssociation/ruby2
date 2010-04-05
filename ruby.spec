@@ -34,6 +34,7 @@ Patch3:		ruby-do_not_propagate_no-undefined.patch
 #(peroyvind): fixes annoying '`*' interpreted as argument prefix' warning
 #             http://redmine.ruby-lang.org/issues/show/1485
 Patch4:		ruby-1.8.7-p249-fix-pathname-warning.patch
+Patch5:		ruby-1.8.7-p249-openssl-1.0.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -99,6 +100,7 @@ This package contains the Tk extension for Ruby.
 %patch2 -p2 -b .old
 %patch3 -p2 -b .undefined
 %patch4 -p1 -b .warning~
+%patch5 -p1 -b .openssl
 
 autoreconf
 
