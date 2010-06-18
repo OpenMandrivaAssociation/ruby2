@@ -1,7 +1,7 @@
 %define subver 1.8
 %define rubyver 1.8.7
 %define patchversion p249
-%define rel 3
+%define rel 4
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -191,6 +191,7 @@ rm -rf %buildroot
 %files doc
 %defattr(-, root, root)
 %{_datadir}/ri
+%dir %{_docdir}/%{name}-%{version}
 %{_docdir}/%{name}-%{version}/COPYING*
 %{_docdir}/%{name}-%{version}/ChangeLog
 %{_docdir}/%{name}-%{version}/README.*
