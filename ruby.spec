@@ -1,7 +1,7 @@
 %define subver 1.8
 %define rubyver 1.8.7
-%define patchversion p249
-%define rel 4
+%define patchversion p299
+%define rel 1
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -31,10 +31,6 @@ Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-add-old-os-to-search-path.patch
 Patch3:		ruby-do_not_propagate_no-undefined.patch
-#(peroyvind): fixes annoying '`*' interpreted as argument prefix' warning
-#             http://redmine.ruby-lang.org/issues/show/1485
-Patch4:		ruby-1.8.7-p249-fix-pathname-warning.patch
-Patch5:		ruby-1.8.7-p249-openssl-1.0.patch
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
@@ -99,8 +95,6 @@ This package contains the Tk extension for Ruby.
 %patch1 -p0 -b .ri
 %patch2 -p2 -b .old
 %patch3 -p2 -b .undefined
-%patch4 -p1 -b .warning~
-%patch5 -p1 -b .openssl
 
 autoreconf
 
