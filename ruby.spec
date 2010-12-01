@@ -1,7 +1,7 @@
 %define subver 1.8
 %define rubyver 1.8.7
 %define patchversion p302
-%define rel 1
+%define rel 2
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -17,7 +17,7 @@ BuildRequires:	tcl-devel tk-devel
 BuildRequires:	db4-devel
 BuildRequires:  libgdbm-devel >= 1.8.3
 BuildRequires:  openssl-devel
-BuildRequires:	zlib1-devel
+BuildRequires:	zlib-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
 # explicit file provides (since such requires are automatically added by find-requires)
