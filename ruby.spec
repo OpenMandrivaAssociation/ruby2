@@ -1,7 +1,7 @@
 %define subver 1.8
 %define rubyver 1.8.7
 %define patchversion p302
-%define rel 2
+%define rel 3
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -22,6 +22,7 @@ Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides: /usr/bin/ruby
+Provides: ruby(abi) = %subver
 
 Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
 Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
