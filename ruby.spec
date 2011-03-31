@@ -1,7 +1,7 @@
 %define subver 1.8
 %define rubyver 1.8.7
 %define patchversion p334
-%define rel 1
+%define rel 2
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -14,7 +14,7 @@ BuildRequires:	byacc
 BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
 BuildRequires:	tcl-devel tk-devel
-BuildRequires:	db4-devel
+BuildRequires:	db5-devel
 BuildRequires:  libgdbm-devel >= 1.8.3
 BuildRequires:  openssl-devel
 BuildRequires:	zlib-devel
