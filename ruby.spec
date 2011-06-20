@@ -23,6 +23,9 @@ Provides:	ruby-rexml
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides: /usr/bin/ruby
 Provides: ruby(abi) = %subver
+# will also apply to all subpackages also, but since they all depend on
+# ruby = %version anyways for now, it doesn't really matter...
+%define _requires_exceptions	ruby\(abi\)
 
 Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
 Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
