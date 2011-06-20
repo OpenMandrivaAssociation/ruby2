@@ -1,7 +1,7 @@
 %define subver 1.8
 %define rubyver 1.8.7
 %define patchversion p334
-%define rel 3
+%define rel 4
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -28,6 +28,8 @@ Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversi
 Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
 Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 Source3:	ruby.macros
+# from ruby 1.9, to prevent file conflicts
+Source4:	ruby-mode.el
 Patch0:		ruby-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-add-old-os-to-search-path.patch
@@ -125,8 +127,7 @@ install -d %buildroot%{_docdir}/%{name}-%{version}
 cp -a COPYING* ChangeLog README* ToDo sample %buildroot%{_docdir}/%{name}-%{version}
 bzcat %{SOURCE1} > %buildroot%{_docdir}/%{name}-%{version}/FAQ.html
 
-install -d %buildroot%{_datadir}/emacs/site-lisp
-cp -a misc/ruby-mode.el %buildroot%{_datadir}/emacs/site-lisp
+install -m644 %{SOURCE4} -D %{buildroot}%{_datadir}/emacs/site-lisp/ruby-mode.el
 
 install -d %buildroot%{_sysconfdir}/emacs/site-start.d
 cat <<EOF >%buildroot%{_sysconfdir}/emacs/site-start.d/%{name}.el
