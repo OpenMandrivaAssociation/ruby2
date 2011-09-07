@@ -3,7 +3,7 @@
 %define patchversion p352
 %define rel 1
 %define arcver %{rubyver}-%{patchversion}
-#%define vendorlibbase	%{_prefix}/lib/ruby
+#% define vendorlibbase	% {_prefix}/lib/ruby
 %define vendorlibbase	%{_libdir}/ruby
 %define vendorarchbase	%{_libdir}/ruby
 %define sitelibbase	%{vendorlibbase}/site_ruby
