@@ -1,18 +1,18 @@
 %define subver 1.8
 %define rubyver 1.8.7
 %define patchversion p352
-%define rel 1
+%define rel 2
 %define arcver %{rubyver}-%{patchversion}
-#% define vendorlibbase	% {_prefix}/lib/ruby
-%define vendorlibbase	%{_libdir}/ruby
+# % define vendorlibbase	% {_prefix}/lib/ruby
+%define vendorlibbase	%{_prefix}/lib/ruby
 %define vendorarchbase	%{_libdir}/ruby
 %define sitelibbase	%{vendorlibbase}/site_ruby
 %define sitearchbase	%{vendorarchbase}/site_ruby
 %define libname		%mklibname %name
 
-%global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/;s/armv.*/arm/')
+%define	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/;s/armv.*/arm/')
 # Fri Jul 15 21:28:10 2011 +0000
-%global	ruby_tk_git_revision	c2dfaa7d40531aef3706bcc16f38178b0c6633ee
+%define	ruby_tk_git_revision	c2dfaa7d40531aef3706bcc16f38178b0c6633ee
 
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
@@ -22,7 +22,8 @@ License:	Ruby or GPLv2
 URL:		http://www.ruby-lang.org/
 
 BuildRequires:	zlib-devel
-BuildRequires:	db5-devel
+#BuildRequires:	db5-devel
+BuildRequires:	libdb5.1-devel
 BuildRequires:	gdbm-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	openssl-devel
@@ -49,10 +50,8 @@ Patch23:	ruby-1.8.7-p330-multilib.patch
 # Mark all i.86 arch's (eg i586, i686, etc) as i386
 Patch29:	ruby-1.8.7-always-use-i386.patch
 # Use shared libs as opposed to static for mkmf
-# See bug 428384
 Patch33:	ruby-1.8.7-p249-mkmf-use-shared.patch
 # Remove duplicate path entry
-# bug 718695
 Patch34:	ruby-1.8.7-p352-path-uniq.patch
 # Change ruby load path to conform to Fedora/ruby
 # library placement (various 1.8.6 patches consolidated into this)
