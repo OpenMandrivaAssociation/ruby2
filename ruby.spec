@@ -56,6 +56,7 @@ Patch34:	ruby-1.8.7-p352-path-uniq.patch
 # Change ruby load path to conform to Fedora/ruby
 # library placement (various 1.8.6 patches consolidated into this)
 Patch100:	ruby-1.8.7-lib-paths.patch
+Patch101:	ruby-1.8.7-gnueabi.patch
 
 Summary:	An interpreter of object-oriented scripting language
 Group:		Development/Ruby
@@ -175,6 +176,9 @@ pushd %{name}-%{arcver}
 %patch33 -p1
 %patch34 -p1
 %patch100 -p1
+%ifarch %arm
+%patch101 -p1
+%endif
 
 ( 
 	cd ext
