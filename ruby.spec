@@ -141,30 +141,32 @@ CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
 %install
 %makeinstall_std install-doc
 
-install -d %buildroot%{_docdir}/%{name}-%{version}
-cp -a COPYING* ChangeLog README* ToDo sample %buildroot%{_docdir}/%{name}-%{version}
+install -d %{buildroot}%{_docdir}/%{name}-%{version}
+cp -a COPYING* ChangeLog README* ToDo sample %{buildroot}%{_docdir}/%{name}-%{version}
 install -m644 %{SOURCE1} -D %{buildroot}%{_docdir}/%{name}-%{version}/FAQ.html
 
 install -m644 %{SOURCE4} -D %{buildroot}%{_datadir}/emacs/site-lisp/ruby-mode.el
 
-install -d %buildroot%{_sysconfdir}/emacs/site-start.d
-cat <<EOF >%buildroot%{_sysconfdir}/emacs/site-start.d/%{name}.el
+install -d %{buildroot}%{_sysconfdir}/emacs/site-start.d
+cat <<EOF >%{buildroot}%{_sysconfdir}/emacs/site-start.d/%{name}.el
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (add-to-list 'auto-mode-alist '("\\\\.rb$" . ruby-mode))
 (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
 EOF
 
-(cd %buildroot%{_docdir}/%{name}-%{version} ; tar xfj %{SOURCE2} ; cd Pro*; mv -f html/* . ; rm -rf html xml)
+tar -C %{buildroot}%{_docdir}/%{name}-%{version} -xjf %{SOURCE2}
+mv %{buildroot}%{_docdir}/%{name}-%{version}/ProgrammingRuby-*/{html/*,}
+rm -rf %{buildroot}%{_docdir}/%{name}-%{version}/ProgrammingRuby-*/{html,xml}/
 
 # Make the file/dirs list, filtering out tcl/tk and devel files
-( cd %buildroot \
-  && find usr/lib/ruby/%{subver} \
-          \( -not -type d -printf "/%%p\n" \) \
-          -or \( -type d -printf "%%%%dir /%%p\n" \) \
-) | egrep -v '/(tcl)?tk|(%{my_target_cpu}-%{_target_os}/.*[ha]$)' > %{name}.list
+find %{buildroot}%{_prefix}/lib/ruby/%{subver} \
+          \( -not -type d -printf "%%p\n" \) \
+          -or \( -type d -printf "%%%%dir %%p\n" \) \
+| sed -e 's#%{buildroot}##g' \
+| egrep -v '/(tcl)?tk|(%{my_target_cpu}-%{_target_os}/.*[ha]$)' > %{name}.list
 
 # Fix scripts permissions and location
-find %buildroot sample -type f | file -i -f - | grep text | cut -d: -f1 >text.list
+find %{buildroot} sample -type f | file -i -f - | grep text | cut -d: -f1 >text.list
 cat text.list | xargs chmod 0644
 #  Magic grepping to get only files with '#!' in the first line
 cat text.list | xargs grep -n '^#!' | grep ':1:#!' | cut -d: -f1 >shebang.list
