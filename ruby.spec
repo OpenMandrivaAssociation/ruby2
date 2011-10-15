@@ -35,8 +35,11 @@ BuildRequires:	db5-devel
 BuildRequires:  libgdbm-devel >= 1.8.3
 BuildRequires:  openssl-devel
 BuildRequires:	zlib-devel
-Obsoletes:	ruby-rexml
-Provides:	ruby-rexml
+%rename		ruby-rexml
+%rename		ruby-irb
+%rename		ruby-libs
+%rename		ruby-rdoc
+
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
 Provides:	ruby(abi) = %{subver}
@@ -70,6 +73,7 @@ Group:		Development/Ruby
 Summary:	Development file for the powerful language Ruby
 Group:		Development/Ruby
 Requires:	%{name} = %{version}
+%rename		ruby-static
 
 %package	tk
 Summary:	Tk extension for the powerful language Ruby
