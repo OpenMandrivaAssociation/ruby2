@@ -8,6 +8,24 @@ Version:	%{rubyver}.%{patchversion}
 Release: 	3
 License:	Ruby or GPLv2
 Group:		Development/Ruby
+
+Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
+Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
+Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
+# from ruby 1.9, to prevent file conflicts
+Source4:	ruby-mode.el
+Patch0:		ruby-1.8.7-p352-lib64.patch
+Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
+Patch2:		ruby-add-old-os-to-search-path.patch
+Patch3:		ruby-do_not_propagate_no-undefined.patch
+Patch4:		ruby-1.8.7-gnueabi.patch
+# http://redmine.ruby-lang.org/issues/5108
+Patch5:		ruby-1.8.7-p352-stdout-rouge-fix.patch
+# Use shared libs as opposed to static for mkmf
+# See bug rhbz#428384
+Patch6:		ruby-1.8.7-p249-mkmf-use-shared.patch
+URL:		http://www.ruby-lang.org/
+
 BuildRequires:	autoconf
 BuildRequires:	byacc
 BuildRequires:	ncurses-devel
@@ -26,23 +44,6 @@ Provides:	ruby(abi) = %{subver}
 # ruby = %version anyways for now, it doesn't really matter...
 %define _requires_exceptions	ruby\(abi\)
 
-Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
-Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
-Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
-# from ruby 1.9, to prevent file conflicts
-Source4:	ruby-mode.el
-Patch0:		ruby-1.8.7-p352-lib64.patch
-Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
-Patch2:		ruby-add-old-os-to-search-path.patch
-Patch3:		ruby-do_not_propagate_no-undefined.patch
-Patch4:		ruby-1.8.7-gnueabi.patch
-# http://redmine.ruby-lang.org/issues/5108
-Patch5:		ruby-1.8.7-p352-stdout-rouge-fix.patch
-# Use shared libs as opposed to static for mkmf
-# See bug rhbz#428384
-Patch6:		ruby-1.8.7-p249-mkmf-use-shared.patch
-
-URL:		http://www.ruby-lang.org/
 
 %define my_target_cpu %{_target_cpu}
 %ifarch ppc
