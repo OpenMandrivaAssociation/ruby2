@@ -10,7 +10,7 @@ License:	Ruby or GPLv2
 Group:		Development/Ruby
 
 Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
-Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
+Source1:	http://www.rubycentral.com/faq/rubyfaqall.html
 Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 # from ruby 1.9, to prevent file conflicts
 Source4:	ruby-mode.el
@@ -143,7 +143,7 @@ CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
 
 install -d %buildroot%{_docdir}/%{name}-%{version}
 cp -a COPYING* ChangeLog README* ToDo sample %buildroot%{_docdir}/%{name}-%{version}
-bzcat %{SOURCE1} > %buildroot%{_docdir}/%{name}-%{version}/FAQ.html
+install -m644 %{SOURCE1} -D %{buildroot}%{_docdir}/%{name}-%{version}/FAQ.html
 
 install -m644 %{SOURCE4} -D %{buildroot}%{_datadir}/emacs/site-lisp/ruby-mode.el
 
