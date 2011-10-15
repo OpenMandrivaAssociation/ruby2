@@ -37,6 +37,8 @@ Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch2:		ruby-add-old-os-to-search-path.patch
 Patch3:		ruby-do_not_propagate_no-undefined.patch
 Patch4:		ruby-1.8.7-gnueabi.patch
+# http://redmine.ruby-lang.org/issues/5108
+Patch5:		ruby-1.8.7-p352-stdout-rouge-fix.patch
 
 URL:		http://www.ruby-lang.org/
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
@@ -105,6 +107,7 @@ This package contains the Tk extension for Ruby.
 %ifarch %arm
 %patch4 -p1
 %endif
+%patch5 -p1 -b .stdout~
 
 autoreconf
 
