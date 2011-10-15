@@ -129,14 +129,6 @@ This package contains the Tk extension for Ruby.
 autoreconf
 
 %build
-echo '.text' | gcc -shared -o libdummy.so.0 -xassembler - -ltcl -ltk >& /dev/null && {
-  if %{_bindir}/ldd libdummy.so.0 | grep -q "lib\(tcl\|tk\).so"; then
-    echo "Your tcl/tk is broken, get one with versioning in the libraries."
-    exit 1
-  fi
-  rm -f libdummy.so.0
-}
-
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
 %configure2_5x --enable-shared --disable-rpath --enable-pthread \
 	--with-sitedir=%_prefix/lib/ruby/%{subver}/site_ruby \
