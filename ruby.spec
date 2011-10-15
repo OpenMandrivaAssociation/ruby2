@@ -29,7 +29,6 @@ Provides: ruby(abi) = %subver
 Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
 Source1:	http://www.rubycentral.com/faq/rubyfaqall.html.bz2
 Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
-Source3:	ruby.macros
 # from ruby 1.9, to prevent file conflicts
 Source4:	ruby-mode.el
 Patch0:		ruby-1.8.7-p352-lib64.patch
@@ -174,10 +173,6 @@ cat text.list | xargs grep -n '^#!' | grep ':1:#!' | cut -d: -f1 >shebang.list
 cat shebang.list | xargs sed -i -e 's|/usr/local/bin|/usr/bin|; s|\./ruby|/usr/bin/ruby|'
 cat shebang.list | xargs chmod 0755
 
-
-# Install the rpm macros 
-mkdir -p %buildroot%{_sysconfdir}/rpm/macros.d
-cp %{SOURCE3} %buildroot%{_sysconfdir}/rpm/macros.d
 %check
 make test
 
@@ -189,7 +184,6 @@ make test
 %{_mandir}/*/*
 %{_datadir}/emacs/site-lisp/*
 %config(noreplace) %{_sysconfdir}/emacs/site-start.d/*
-%{_sysconfdir}/rpm/macros.d/%{name}.macros
 
 %files -n %{libname}
 %{_libdir}/libruby.so.%{subver}*
