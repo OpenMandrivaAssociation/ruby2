@@ -56,6 +56,12 @@ URL:		http://www.ruby-lang.org/
 %define my_target_cpu x86_64
 %endif
 
+%define	libname	%mklibname ruby %{subver}
+
+%package -n	%{libname}
+Summary:	Shared main library for ruby %{subver}
+Group:		System/Libraries
+
 %package	doc
 Summary:	Documentation for the powerful language Ruby
 Group:		Development/Ruby
@@ -75,6 +81,9 @@ Ruby is the interpreted scripting language for quick and
 easy object-oriented programming.  It has many features to
 process text files and to do system management tasks (as in
 Perl).  It is simple, straight-forward, and extensible.
+
+%description -n	%{libname}
+This package contains the shared ruby %{subver} library.
 
 %description	doc
 Ruby is the interpreted scripting language for quick and
@@ -177,11 +186,13 @@ make test
 %{_docdir}/%{name}-%{version}/README
 %{_bindir}/*
 %dir %{_prefix}/lib/%{name}/
-%{_libdir}/libruby.so.*
 %{_mandir}/*/*
 %{_datadir}/emacs/site-lisp/*
 %config(noreplace) %{_sysconfdir}/emacs/site-start.d/*
 %{_sysconfdir}/rpm/macros.d/%{name}.macros
+
+%files -n %{libname}
+%{_libdir}/libruby.so.%{subver}*
 
 %files doc
 %{_datadir}/ri
