@@ -44,7 +44,6 @@ Patch5:		ruby-1.8.7-p352-stdout-rouge-fix.patch
 Patch6:		ruby-1.8.7-p249-mkmf-use-shared.patch
 
 URL:		http://www.ruby-lang.org/
-Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
 %define my_target_cpu %{_target_cpu}
 %ifarch ppc
@@ -134,7 +133,6 @@ CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
 
 
 %install
-rm -rf %buildroot
 %makeinstall_std install-doc
 
 install -d %buildroot%{_docdir}/%{name}-%{version}
@@ -174,19 +172,7 @@ cp %{SOURCE3} %buildroot%{_sysconfdir}/rpm/macros.d
 %check
 make test
 
-%clean
-rm -rf %buildroot
-
-%if %mdkversion < 200900
-%post -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -p /sbin/ldconfig
-%endif
-
 %files -f %{name}.list
-%defattr(-, root, root)
 %dir %{_docdir}/%{name}-%{version}
 %{_docdir}/%{name}-%{version}/README
 %{_bindir}/*
@@ -198,7 +184,6 @@ rm -rf %buildroot
 %{_sysconfdir}/rpm/macros.d/%{name}.macros
 
 %files doc
-%defattr(-, root, root)
 %{_datadir}/ri
 %dir %{_docdir}/%{name}-%{version}
 %{_docdir}/%{name}-%{version}/COPYING*
@@ -210,13 +195,11 @@ rm -rf %buildroot
 %{_docdir}/%{name}-%{version}/ProgrammingRuby*
 
 %files devel
-%defattr(-, root, root)
 %{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/*.[ah]
 %{_libdir}/libruby-static.a
 %{_libdir}/libruby.so
 
 %files tk
-%defattr(-, root, root)
 %{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/tcltk*
 %{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/tk*
 %{_prefix}/lib/%{name}/%{subver}/tcltk*
