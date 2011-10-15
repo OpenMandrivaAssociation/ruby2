@@ -130,13 +130,13 @@ autoreconf
 
 %build
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
-%configure2_5x --enable-shared --disable-rpath --enable-pthread \
-	--with-sitedir=%_prefix/lib/ruby/%{subver}/site_ruby \
-	--with-vendordir=%_prefix/lib/ruby/%{subver}/vendor_ruby \
-	--with-old-os=linux-gnu
-
+%configure2_5x	--enable-shared \
+		--disable-rpath \
+		--enable-pthread \
+		--with-sitedir=%{_prefix}/lib/ruby/%{subver}/site_ruby \
+		--with-vendordir=%{_prefix}/lib/ruby/%{subver}/vendor_ruby \
+		--with-old-os=linux-gnu
 %make
-
 
 %install
 %makeinstall_std install-doc
