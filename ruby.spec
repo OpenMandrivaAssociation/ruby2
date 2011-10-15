@@ -20,8 +20,8 @@ BuildRequires:	zlib-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
 # explicit file provides (since such requires are automatically added by find-requires)
-Provides: /usr/bin/ruby
-Provides: ruby(abi) = %subver
+Provides:	/usr/bin/ruby
+Provides:	ruby(abi) = %{subver}
 # will also apply to all subpackages also, but since they all depend on
 # ruby = %version anyways for now, it doesn't really matter...
 %define _requires_exceptions	ruby\(abi\)
@@ -210,4 +210,3 @@ make test
 %{_prefix}/lib/%{name}/%{subver}/tcltk*
 %{_prefix}/lib/%{name}/%{subver}/tk*
 %{_prefix}/lib/%{name}/%{subver}/test/unit/ui/tk
-
