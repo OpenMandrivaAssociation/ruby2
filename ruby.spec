@@ -68,6 +68,7 @@ Group:		System/Libraries
 %package	doc
 Summary:	Documentation for the powerful language Ruby
 Group:		Development/Ruby
+BuildArch:	noarch
 
 %package	devel
 Summary:	Development file for the powerful language Ruby
