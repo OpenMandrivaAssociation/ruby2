@@ -1,11 +1,12 @@
-%define subver 1.8
-%define rubyver 1.8.7
-%define patchversion p352
+%define subver 1.9
+%define abiver 1.9.1
+%define rubyver 1.9.3
+%define patchversion p0
 
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	3
+Release: 	1
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
@@ -14,9 +15,7 @@ Source1:	http://www.rubycentral.com/faq/rubyfaqall.html
 Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 # from ruby 1.9, to prevent file conflicts
 Source4:	ruby-mode.el
-Patch0:		ruby-1.8.7-p352-lib64.patch
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
-Patch2:		ruby-add-old-os-to-search-path.patch
 Patch3:		ruby-do_not_propagate_no-undefined.patch
 Patch4:		ruby-1.8.7-gnueabi.patch
 # http://redmine.ruby-lang.org/issues/5108
@@ -42,7 +41,7 @@ BuildRequires:	zlib-devel
 
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
-Provides:	ruby(abi) = %{subver}
+Provides:	ruby(abi) = %{abiver}
 # will also apply to all subpackages also, but since they all depend on
 # ruby = %version anyways for now, it doesn't really matter...
 %define _requires_exceptions	ruby\(abi\)
@@ -116,10 +115,8 @@ This package contains the Tk extension for Ruby.
 
 %prep
 %setup -q -n ruby-%{rubyver}-%{patchversion}
-%patch0 -p1 -b .lib64
-%patch1 -p0 -b .ri
-%patch2 -p2 -b .old
-%patch3 -p2 -b .undefined
+%patch1 -p1 -b .ri
+%patch3 -p1 -b .undefined
 %ifarch %arm
 %patch4 -p1
 %endif
@@ -133,9 +130,9 @@ CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
 %configure2_5x	--enable-shared \
 		--disable-rpath \
 		--enable-pthread \
-		--with-sitedir=%{_prefix}/lib/ruby/%{subver}/site_ruby \
-		--with-vendordir=%{_prefix}/lib/ruby/%{subver}/vendor_ruby \
-		--with-old-os=linux-gnu
+		--with-sitedir=%{_prefix}/lib/ruby/%{abiver}/site_ruby \
+		--with-vendordir=%{_prefix}/lib/ruby/%{abiver}/vendor_ruby \
+		--with-rubylibprefix=%{_prefix}/lib/ruby
 %make
 
 %install
@@ -159,7 +156,7 @@ mv %{buildroot}%{_docdir}/%{name}-%{version}/ProgrammingRuby-*/{html/*,}
 rm -rf %{buildroot}%{_docdir}/%{name}-%{version}/ProgrammingRuby-*/{html,xml}/
 
 # Make the file/dirs list, filtering out tcl/tk and devel files
-find %{buildroot}%{_prefix}/lib/ruby/%{subver} \
+find %{buildroot}%{_prefix}/lib/ruby/%{abiver} \
           \( -not -type d -printf "%%p\n" \) \
           -or \( -type d -printf "%%%%dir %%p\n" \) \
 | sed -e 's#%{buildroot}##g' \
@@ -183,6 +180,10 @@ make test
 %dir %{_prefix}/lib/%{name}/
 %{_mandir}/*/*
 %{_datadir}/emacs/site-lisp/*
+%{_prefix}/lib/%{name}/gems/%{abiver}/gems/rake-*/bin/rake
+%{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin/rdoc
+%{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin/ri
+%{_prefix}/lib/%{name}/gems/%{abiver}/specifications/*.gemspec
 %config(noreplace) %{_sysconfdir}/emacs/site-start.d/*
 
 %files -n %{libname}
@@ -200,13 +201,13 @@ make test
 %{_docdir}/%{name}-%{version}/ProgrammingRuby*
 
 %files devel
-%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/*.[ah]
+%{_includedir}/ruby-*
 %{_libdir}/libruby-static.a
 %{_libdir}/libruby.so
+%{_libdir}/pkgconfig/ruby-%{subver}.pc
 
 %files tk
-%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/tcltk*
-%{_prefix}/lib/%{name}/%{subver}/%{my_target_cpu}-%{_target_os}/tk*
-%{_prefix}/lib/%{name}/%{subver}/tcltk*
-%{_prefix}/lib/%{name}/%{subver}/tk*
-%{_prefix}/lib/%{name}/%{subver}/test/unit/ui/tk
+%{_prefix}/lib/%{name}/%{abiver}/%{my_target_cpu}-%{_target_os}/tcltk*
+%{_prefix}/lib/%{name}/%{abiver}/%{my_target_cpu}-%{_target_os}/tk*
+%{_prefix}/lib/%{name}/%{abiver}/tcltk*
+%{_prefix}/lib/%{name}/%{abiver}/tk*
