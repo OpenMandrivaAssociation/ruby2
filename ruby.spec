@@ -6,7 +6,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	1
+Release: 	2
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
@@ -31,9 +31,10 @@ BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
 BuildRequires:	tcl-devel tk-devel
 BuildRequires:	db5-devel
-BuildRequires:  libgdbm-devel >= 1.8.3
-BuildRequires:  openssl-devel
+BuildRequires:	libgdbm-devel >= 1.8.3
+BuildRequires:	openssl-devel
 BuildRequires:	zlib-devel
+BuildRequires:	yaml-devel
 %rename		ruby-rexml
 %rename		ruby-irb
 %rename		ruby-libs
