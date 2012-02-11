@@ -6,7 +6,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	2
+Release: 	3
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
@@ -39,6 +39,7 @@ BuildRequires:	yaml-devel
 %rename		ruby-irb
 %rename		ruby-libs
 %rename		ruby-rdoc
+%rename		ruby1.9
 
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
