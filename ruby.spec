@@ -6,7 +6,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	5
+Release: 	6
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
@@ -73,17 +73,20 @@ Group:		System/Libraries
 Summary:	Documentation for the powerful language Ruby
 Group:		Development/Ruby
 BuildArch:	noarch
+%rename		ruby1.9-doc
 
 %package	devel
 Summary:	Development file for the powerful language Ruby
 Group:		Development/Ruby
 Requires:	%{name} = %{version}
 %rename		ruby-static
+%rename		ruby1.9-devel
 
 %package	tk
 Summary:	Tk extension for the powerful language Ruby
 Group:		Development/Ruby
 Requires:	%{name} = %{version}
+%rename		ruby1.9-tk
 
 %description
 Ruby is the interpreted scripting language for quick and
