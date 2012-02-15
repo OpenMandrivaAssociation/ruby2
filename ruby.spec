@@ -40,6 +40,8 @@ BuildRequires:	yaml-devel
 %rename		ruby-libs
 %rename		ruby-rdoc
 %rename		ruby1.9
+%rename		ruby-rake
+%rename		rubygem-rake
 
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
