@@ -6,7 +6,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	4
+Release: 	5
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
@@ -42,6 +42,7 @@ BuildRequires:	yaml-devel
 %rename		ruby1.9
 %rename		ruby-rake
 %rename		rubygem-rake
+Provides:	rubygem(rake) = 0.9.2.2
 
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
