@@ -6,7 +6,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	6
+Release: 	7
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
@@ -49,8 +49,11 @@ Provides:	/usr/bin/ruby
 Provides:	ruby(abi) = %{abiver}
 # will also apply to all subpackages also, but since they all depend on
 # ruby = %version anyways for now, it doesn't really matter...
+%if %{_use_internal_dependency_generator}
+%define __noautoreq		'ruby\\(abi\\)'
+%else
 %define _requires_exceptions	ruby\(abi\)
-
+%endif
 
 %define my_target_cpu %{_target_cpu}
 %ifarch ppc
