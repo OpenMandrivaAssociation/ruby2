@@ -1,7 +1,7 @@
 %define subver 1.9
 %define abiver 1.9.1
 %define rubyver 1.9.3
-%define patchversion p0
+%define patchversion p194
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -186,14 +186,21 @@ make test
 
 %files -f %{name}.list
 %dir %{_docdir}/%{name}-%{version}
-%{_docdir}/%{name}-%{version}/README
+%doc %{_docdir}/%{name}-%{version}/README
+%doc %{_docdir}/%name
 %{_bindir}/*
 %dir %{_prefix}/lib/%{name}/
 %{_mandir}/*/*
 %{_datadir}/emacs/site-lisp/*
+%dir %_prefix/lib/%name/gems/%abiver/gems
+%dir %_prefix/lib/%name/gems/%abiver/gems/rake-*
+%dir %_prefix/lib/%name/gems/%abiver/gems/rake-*/bin
 %{_prefix}/lib/%{name}/gems/%{abiver}/gems/rake-*/bin/rake
+%dir %{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*
+%dir %{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin
 %{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin/rdoc
 %{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin/ri
+%dir %_prefix/lib/%name/gems/%abiver/specifications
 %{_prefix}/lib/%{name}/gems/%{abiver}/specifications/*.gemspec
 %config(noreplace) %{_sysconfdir}/emacs/site-start.d/*
 
