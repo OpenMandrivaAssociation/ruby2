@@ -43,6 +43,8 @@ BuildRequires:	yaml-devel
 %rename		ruby-rake
 %rename		rubygem-rake
 Provides:	rubygem(rake) = 0.9.2.2
+%rename		ruby-RubyGems
+Provides:	rubygems = %version-%release
 
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
