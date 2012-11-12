@@ -1,0 +1,10 @@
+--- ruby-1.9.3-p0/tool/mkconfig.rb.bero	2012-01-18 19:10:59.893935601 +0100
++++ ruby-1.9.3-p0/tool/mkconfig.rb	2012-01-18 19:11:04.770935257 +0100
+@@ -83,6 +83,7 @@ File.foreach "config.status" do |line|
+     when /^\$\{ac_\w+\}$/; next
+     when /^\$ac_\w+$/; next
+     end
++    val.sub!(/-Wl,--no-undefined/, '') if /^LDFLAGS/ =~ name
+     if /^program_transform_name$/ =~ name
+       val.sub!(/\As(\\?\W)(?:\^|\${1,2})\1\1(;|\z)/, '')
+       if val.empty?
