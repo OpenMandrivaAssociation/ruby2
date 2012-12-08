@@ -1,0 +1,13 @@
+diff --git a/configure.in b/configure.in
+index 6d24689..168403f 100644
+--- a/configure.in
++++ b/configure.in
+@@ -121,7 +121,7 @@ AC_SUBST(RUBY_BASE_NAME)
+ AC_SUBST(RUBYW_BASE_NAME)
+ 
+ AC_CANONICAL_TARGET
+-target_os=`echo $target_os | sed 's/linux-gnu$/linux/;s/linux-gnu/linux-/'`
++target_os=`echo $target_os | sed 's/linux-gnu\(eabi\)\?$/linux/;s/linux-gnu\(eabi\)\?/linux-/'`
+ ac_install_sh='' # unusable for extension libraries.
+ 
+ AC_DEFUN([RUBY_APPEND_OPTION],

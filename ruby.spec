@@ -6,7 +6,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	2
+Release: 	5
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
@@ -17,7 +17,7 @@ Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
 Source4:	ruby-mode.el
 Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
 Patch3:		ruby-do_not_propagate_no-undefined.patch
-Patch4:		ruby-1.8.7-gnueabi.patch
+Patch4:		ruby-1.9.3-gnueabi.patch
 # http://redmine.ruby-lang.org/issues/5108
 Patch5:		ruby-1.8.7-p352-stdout-rouge-fix.patch
 # Use shared libs as opposed to static for mkmf
@@ -231,3 +231,10 @@ make test
 %{_prefix}/lib/%{name}/%{abiver}/%{my_target_cpu}-%{_target_os}/tk*
 %{_prefix}/lib/%{name}/%{abiver}/tcltk*
 %{_prefix}/lib/%{name}/%{abiver}/tk*
+
+
+%changelog
+* Wed May 16 2012 Bernhard Rosenkraenzer <bero@bero.eu> 1.9.3.p194-2
++ Revision: 799161
+- Obsolete ruby-RubyGems, it's part of ruby in 1.9.x
+
