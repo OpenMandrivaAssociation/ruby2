@@ -1,12 +1,12 @@
 %define subver 1.9
 %define abiver 1.9.1
 %define rubyver 1.9.3
-%define patchversion p194
+%define patchversion p362
 
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	5
+Release: 	1
 License:	Ruby or GPLv2
 Group:		Development/Ruby
 
