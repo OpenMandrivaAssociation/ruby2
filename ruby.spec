@@ -23,6 +23,8 @@ Patch5:		ruby-1.8.7-p352-stdout-rouge-fix.patch
 # Use shared libs as opposed to static for mkmf
 # See bug rhbz#428384
 Patch6:		ruby-1.8.7-p249-mkmf-use-shared.patch
+#aarch64
+Patch7:		ruby-1.9-aarch64.patch
 URL:		http://www.ruby-lang.org/
 
 BuildRequires:	autoconf
@@ -135,8 +137,9 @@ This package contains the Tk extension for Ruby.
 %endif
 %patch5 -p1 -b .stdout~
 %patch6 -p1 -b .shared~
+%patch7 -p1 -b .aarch64
 
-autoreconf
+autoreconf -fi
 
 %build
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
