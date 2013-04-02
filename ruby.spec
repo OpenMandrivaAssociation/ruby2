@@ -2,6 +2,7 @@
 %define abiver 1.9.1
 %define rubyver 1.9.3
 %define patchversion p385
+%bcond_without	tcltk
 
 Summary:	Object Oriented Script Language
 Name:		ruby
@@ -31,7 +32,9 @@ BuildRequires:	autoconf
 BuildRequires:	byacc
 BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
+%if %{with tcltk}
 BuildRequires:	tcl-devel tk-devel
+%endif
 BuildRequires:	db5-devel
 BuildRequires:	libgdbm-devel >= 1.8.3
 BuildRequires:	openssl-devel
@@ -89,11 +92,21 @@ Requires:	%{name} = %{version}
 %rename		ruby-static
 %rename		ruby1.9-devel
 
+%if %{with tcltk}
 %package	tk
 Summary:	Tk extension for the powerful language Ruby
 Group:		Development/Ruby
 Requires:	%{name} = %{version}
 %rename		ruby1.9-tk
+
+%description	tk
+Ruby is the interpreted scripting language for quick and
+easy object-oriented programming.  It has many features to
+process text files and to do system management tasks (as in
+Perl). It is simple, straight-forward, and extensible.
+
+This package contains the Tk extension for Ruby.
+%endif
 
 %description
 Ruby is the interpreted scripting language for quick and
@@ -120,13 +133,6 @@ Perl). It is simple, straight-forward, and extensible.
 
 This package contains the Ruby's devel files.
 
-%description	tk
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl). It is simple, straight-forward, and extensible.
-
-This package contains the Tk extension for Ruby.
 
 %prep
 %setup -q -n ruby-%{rubyver}-%{patchversion}
@@ -145,6 +151,7 @@ autoreconf -fi
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
 %configure2_5x	--enable-shared \
 		--disable-rpath \
+		--enable-wide-getaddrinfo \
 		--enable-pthread \
 		--with-sitedir=%{_prefix}/lib/ruby/%{abiver}/site_ruby \
 		--with-vendordir=%{_prefix}/lib/ruby/%{abiver}/vendor_ruby \
@@ -229,11 +236,13 @@ make test
 %{_libdir}/libruby.so
 %{_libdir}/pkgconfig/ruby-%{subver}.pc
 
+%if %{with tcltk}
 %files tk
 %{_prefix}/lib/%{name}/%{abiver}/%{my_target_cpu}-%{_target_os}/tcltk*
 %{_prefix}/lib/%{name}/%{abiver}/%{my_target_cpu}-%{_target_os}/tk*
 %{_prefix}/lib/%{name}/%{abiver}/tcltk*
 %{_prefix}/lib/%{name}/%{abiver}/tk*
+%endif
 
 
 %changelog
