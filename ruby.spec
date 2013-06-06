@@ -35,7 +35,7 @@ BuildRequires:	readline-devel
 %if %{with tcltk}
 BuildRequires:	tcl-devel tk-devel
 %endif
-BuildRequires:	db5-devel
+BuildRequires:	db52-devel
 BuildRequires:	gdbm-devel >= 1.8.3
 BuildRequires:	openssl-devel
 BuildRequires:	zlib-devel
@@ -146,6 +146,7 @@ This package contains the Ruby's devel files.
 %patch7 -p1 -b .aarch64
 
 autoreconf -fi
+touch configure.in
 
 %build
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
