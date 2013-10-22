@@ -1,103 +1,140 @@
-%define subver 1.9
-%define abiver 1.9.1
-%define rubyver 1.9.3
-%define patchversion p385
-%bcond_without	tcltk
+%define subver 2.0
+%define rubyapi 2.0.0
+%define rubyver 2.0.0
+%define patchversion p247
+
+%define libname %mklibname ruby %{subver}
+
+%define ruby_libdir %{_datadir}/%{name}
+%define ruby_libarchdir %{_libdir}/%{name}
+
+# This is the local lib/arch and should not be used for packaging.
+%define ruby_sitelibdir %{_datadir}/ruby/site_ruby
+%define ruby_sitearchdir %{_libdir}/ruby/site_ruby
+
+# This is the general location for libs/archs compatible with all
+# or most of the Ruby versions available in the Fedora repositories.
+%define ruby_vendorlibdir %{_datadir}/ruby/vendor_ruby
+%define ruby_vendorarchdir %{_libdir}/ruby/vendor_ruby
+
+# The RubyGems library has to stay out of Ruby directory three, since the
+# RubyGems should be share by all Ruby implementations.
+%define rubygems_dir %{_datadir}/ruby/gems
+%define rubygems_version 2.0.2
+
+%bcond_without bootstrap
+%bcond_with gems
+%bcond_without tcltk
 
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	3
-License:	Ruby or GPLv2
+Release: 	1
+License:	Ruby or BSD
 Group:		Development/Ruby
-
-Source0:	ftp://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
-Source1:	http://www.rubycentral.com/faq/rubyfaqall.html
-Source2:	http://dev.rubycentral.com/downloads/files/ProgrammingRuby-0.4.tar.bz2
-# from ruby 1.9, to prevent file conflicts
-Source4:	ruby-mode.el
-Patch1:		ruby-do-not-use-system-ruby-to-generate-ri-doc.patch
-Patch3:		ruby-do_not_propagate_no-undefined.patch
-Patch4:		ruby-1.9.3-gnueabi.patch
-# http://redmine.ruby-lang.org/issues/5108
-Patch5:		ruby-1.8.7-p352-stdout-rouge-fix.patch
-# Use shared libs as opposed to static for mkmf
-# See bug rhbz#428384
-Patch6:		ruby-1.8.7-p249-mkmf-use-shared.patch
-#aarch64
-Patch7:		ruby-1.9-aarch64.patch
-URL:		http://www.ruby-lang.org/
-
 BuildRequires:	autoconf
 BuildRequires:	byacc
+BuildRequires:	doxygen
 BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
 %if %{with tcltk}
-BuildRequires:	tcl-devel tk-devel
+BuildRequires:  tcl-devel tk-devel
 %endif
-BuildRequires:	db52-devel
-BuildRequires:	gdbm-devel >= 1.8.3
-BuildRequires:	openssl-devel
+BuildRequires:	db-devel
+BuildRequires:  gdbm-devel >= 1.8.3
+BuildRequires:  openssl-devel
 BuildRequires:	zlib-devel
+BuildRequires:	pkgconfig(libffi)
 BuildRequires:	yaml-devel
-%rename		ruby-rexml
-%rename		ruby-irb
-%rename		ruby-libs
-%rename		ruby-rdoc
-%rename		ruby1.9
-%rename		ruby-rake
-%rename		rubygem-rake
-Provides:	rubygem(rake) = 0.9.2.2
-%rename		ruby-RubyGems
-Provides:	rubygems = %version-%release
-
+Obsoletes:	ruby-rexml
+Provides:	ruby-rexml
+# Couldn't get the standalone gem to work
+Provides:	rubygem(psych)
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
-Provides:	ruby(abi) = %{abiver}
-# will also apply to all subpackages also, but since they all depend on
-# ruby = %version anyways for now, it doesn't really matter...
-%if %{_use_internal_dependency_generator}
-%define __noautoreq		'ruby\\(abi\\)'
-%else
-%define _requires_exceptions	ruby\(abi\)
+Provides:	ruby(abi) = %rubyapi
+Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
+Source1:	operating_system.rb
+URL:		http://www.ruby-lang.org/
+%if !%{with bootstrap}
+Requires:	rubygems >= %{rubygems_version}
+BuildRequires:	ruby
 %endif
 
-%define my_target_cpu %{_target_cpu}
-%ifarch ppc
-%define my_target_cpu powerpc
-%endif
-%ifarch ppc64
-%define my_target_cpu powerpc64
-%endif
-%ifarch amd64
-%define my_target_cpu x86_64
-%endif
+# == FEDORA PATCHES BEGINS ==
+# http://bugs.ruby-lang.org/issues/7807
+Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+# Fixes random WEBRick test failures.
+# https://bugs.ruby-lang.org/issues/6573.
+Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
+# Allows to install RubyGems into custom directory, outside of Ruby's tree.
+# http://redmine.ruby-lang.org/issues/5617
+Patch8: ruby-1.9.3-custom-rubygems-location.patch
+# Add support for installing binary extensions according to FHS.
+# https://github.com/rubygems/rubygems/issues/210
+# Note that 8th patch might be resolved by
+# https://bugs.ruby-lang.org/issues/7897
+Patch9: rubygems-2.0.0-binary-extensions.patch
+# Make mkmf verbose by default
+Patch12: ruby-1.9.3-mkmf-verbose.patch
+# This slightly changes behavior of "gem install --install-dir" behavior.
+# Without this patch, Specifications.dirs is modified and gems installed on
+# the system cannot be required anymore. This causes later issues when RDoc
+# documentation should be generated, since json gem is sudenly not accessible.
+# https://github.com/rubygems/rubygems/pull/452
+Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
+# This prevents issues, when ruby configuration specifies --with-ruby-version=''.
+# https://github.com/rubygems/rubygems/pull/455
+Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
+# Fixes issues with DESTDIR.
+# https://bugs.ruby-lang.org/issues/8115
+Patch18: ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
+# == FEDORA PATCHES ENDS ==
+%description
+Ruby is the interpreted scripting language for quick and
+easy object-oriented programming.  It has many features to
+process text files and to do system management tasks (as in
+Perl).  It is simple, straight-forward, and extensible.
 
-%define	libname	%mklibname ruby %{subver}
+%package	-n %{libname}
+Summary:	Libraries necessary to run Ruby
+Group:		Development/Ruby
 
-%package -n	%{libname}
-Summary:	Shared main library for ruby %{subver}
-Group:		System/Libraries
+%description	-n %{libname}
+This package includes the libruby, necessary to run Ruby.
 
 %package	doc
 Summary:	Documentation for the powerful language Ruby
 Group:		Development/Ruby
 BuildArch:	noarch
-%rename		ruby1.9-doc
+
+%description	doc
+Ruby is the interpreted scripting language for quick and
+easy object-oriented programming.  It has many features to
+process text files and to do system management tasks (as in
+Perl). It is simple, straight-forward, and extensible.
+
+This package contains the Ruby's documentation
 
 %package	devel
 Summary:	Development file for the powerful language Ruby
 Group:		Development/Ruby
 Requires:	%{name} = %{version}
-%rename		ruby-static
-%rename		ruby1.9-devel
+Requires:	%{libname} = %{version}
+
+%description	devel
+Ruby is the interpreted scripting language for quick and
+easy object-oriented programming.  It has many features to
+process text files and to do system management tasks (as in
+Perl). It is simple, straight-forward, and extensible.
+
+This package contains the Ruby's devel files.
 
 %if %{with tcltk}
 %package	tk
 Summary:	Tk extension for the powerful language Ruby
 Group:		Development/Ruby
 Requires:	%{name} = %{version}
-%rename		ruby1.9-tk
 
 %description	tk
 Ruby is the interpreted scripting language for quick and
@@ -108,146 +145,438 @@ Perl). It is simple, straight-forward, and extensible.
 This package contains the Tk extension for Ruby.
 %endif
 
-%description
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl).  It is simple, straight-forward, and extensible.
+%package	RubyGems
+Summary:	The Ruby standard for packaging ruby libraries
+Group:		Development/Ruby
+Version:	%{rubygems_version}
+Requires:	ruby(abi) = %{subver}
+Provides:	gem = %{rubygems_version}
+Provides:	rubygems = %{rubygems_version}
+Provides:	ruby(rubygems) = %{rubygems_version}
+BuildArch:	noarch
 
-%description -n	%{libname}
-This package contains the shared ruby %{subver} library.
+%description	RubyGems
+RubyGems is the Ruby standard for publishing and managing third party
+libraries.
 
-%description	doc
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl). It is simple, straight-forward, and extensible.
+%define rake_ver 0.9.6
+%package	rake
+Summary:	Simple ruby build program with capabilities similar to make
+Group:		Development/Ruby
+Version:	%{rake_ver}
+Requires:	ruby(abi) = %{subver}
+BuildArch:	noarch
 
-This package contains the Ruby's documentation
+%description	rake
+Rake is a Make-like program implemented in Ruby. Tasks and dependencies are
+specified in standard Ruby syntax.
 
-%description	devel
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl). It is simple, straight-forward, and extensible.
+%define minitest_ver 4.3.2
+%package	minitest
+Summary:	Minitest provides a complete suite of testing facilities
+Group:		Development/Ruby
+Version:	%{minitest_ver}
+License:	MIT
+Requires:	ruby(abi) = %{subver}
+Requires:	ruby(rubygems) >= %{rubygems_version}
+BuildArch:	noarch
 
-This package contains the Ruby's devel files.
+%description	minitest
+minitest/unit is a small and incredibly fast unit testing framework.
 
+minitest/spec is a functionally complete spec engine.
+
+minitest/benchmark is an awesome way to assert the performance of your
+algorithms in a repeatable manner.
+
+minitest/mock by Steven Baker, is a beautifully tiny mock object
+framework.
+
+minitest/pride shows pride in testing and adds coloring to your test
+output.
+
+
+%define json_ver 1.7.7
+%package	json
+Summary:	This is a JSON implementation as a Ruby extension in C
+Group:		Development/Ruby
+Version:	%{json_ver}
+License:	Ruby or GPLv2
+Requires:	ruby(abi) = %{subver}
+Requires:	ruby(rubygems) >= %{rubygems_version}
+
+%description	json
+This is a implementation of the JSON specification according to RFC 4627.
+You can think of it as a low fat alternative to XML, if you want to store
+data to disk or transmit it over a network rather than use a verbose
+markup language.
+
+
+%define rdoc_ver 4.0.0
+%package	rdoc
+Summary:	A tool to generate HTML and command-line documentation for Ruby projects
+Group:		Development/Ruby
+Version:	%{rdoc_ver}
+License:	GPLv2 and Ruby and MIT
+Requires:	ruby(abi) = %{subver}
+Requires:	ruby(rubygems) >= %{rubygems_version}
+Requires:	ruby(irb) = %{version}
+Provides:	rdoc = %{rdoc_ver}
+Provides:	ri = %{rdoc_ver}
+BuildArch:	noarch
+
+%description 	rdoc
+RDoc produces HTML and command-line documentation for Ruby projects.  RDoc
+includes the 'rdoc' and 'ri' tools for generating and displaying online
+documentation.
+
+%package	irb
+Summary:	The Interactive Ruby
+Group:		Development/Ruby
+Provides:	irb = %{version}-%{release}
+Provides:	ruby(irb) = %{version}-%{release}
+Conflicts:	ruby < 1.9
+BuildArch:	noarch
+
+%description	irb
+The irb is acronym for Interactive Ruby.  It evaluates ruby expression
+from the terminal.
+
+%define bigdecimal_ver 1.2.0
+%package	bigdecimal
+Summary:	BigDecimal provides arbitrary-precision floating point decimal arithmetic
+Group:		Development/Ruby
+Version:	%{bigdecimal_ver}
+License:	GPL+ or Artistic
+Requires:	ruby(abi) = %{subver}
+Requires:	ruby(rubygems) >= %{rubygems_version}
+
+%description	bigdecimal
+Ruby provides built-in support for arbitrary precision integer arithmetic.
+For example:
+
+42**13 -> 1265437718438866624512
+
+BigDecimal provides similar support for very large or very accurate floating
+point numbers. Decimal arithmetic is also useful for general calculation,
+because it provides the correct answers people expect–whereas normal binary
+floating point arithmetic often introduces subtle errors because of the
+conversion between base 10 and base 2.
+
+
+%define io_console_ver 0.4.2
+%package	io-console
+Summary:	IO/Console is a simple console utilizing library
+Group:		Development/Ruby
+Version:	%{io_console_ver}
+Requires:	ruby(abi) = %{subver}
+Requires:	ruby(rubygems) >= %{rubygems_version}
+
+%description	io-console
+IO/Console provides very simple and portable access to console. It doesn't
+provide higher layer features, such like curses and readline.
+
+
+%define psych_ver 2.0.0
+%package psych
+Summary:	A libyaml wrapper for Ruby
+Version:	%{psych_ver}
+Group:		Development/Ruby
+License:	MIT
+Requires:	ruby(abi) = %{subver}
+Requires:	ruby(rubygems) >= %{rubygems_version}
+Conflicts:	ruby < 2.0.0
+
+%description	psych
+Psych is a YAML parser and emitter. Psych leverages
+libyaml[http://pyyaml.org/wiki/LibYAML] for its YAML parsing and emitting
+capabilities. In addition to wrapping libyaml, Psych also knows how to
+serialize and de-serialize most Ruby objects to and from the YAML format.
+
+
+%define test_unit_ver 2.0.0
+%package test-unit
+Summary:	test/unit compatible API testing framework
+Version:	%{psych_ver}
+Group:		Development/Ruby
+License:	MIT
+Requires:	ruby(abi) = %{subver}
+Requires:	ruby(rubygems) >= %{rubygems_version}
+Conflicts:	ruby < 2.0.0
+BuildArch:	noarch
 
 %prep
 %setup -q -n ruby-%{rubyver}-%{patchversion}
-%patch1 -p1 -b .ri
-%patch3 -p1 -b .undefined
-%ifarch %arm
-%patch4 -p1
-%endif
-%patch5 -p1 -b .stdout~
-%patch6 -p1 -b .shared~
-%patch7 -p1 -b .aarch64
-
-autoreconf -fi
-touch configure.in
+%apply_patches
+# When patching mkmf.rb the mkmf.rb.0010 gets installed
+rm lib/mkmf.rb.0*
 
 %build
+autoconf
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
-%configure2_5x	--enable-shared \
-		--disable-rpath \
-		--enable-wide-getaddrinfo \
-		--enable-pthread \
-		--with-sitedir=%{_prefix}/lib/ruby/%{abiver}/site_ruby \
-		--with-vendordir=%{_prefix}/lib/ruby/%{abiver}/vendor_ruby \
-		--with-rubylibprefix=%{_prefix}/lib/ruby
+%configure2_5x --enable-shared --disable-rpath --enable-pthread \
+	--with-rubylibprefix='%{ruby_libdir}' \
+        --with-rubyarchprefix='%{ruby_libarchdir}' \
+	--with-sitedir='%{ruby_sitelibdir}' \
+	--with-sitearchdir='%{ruby_sitearchdir}' \
+	--with-vendordir='%{ruby_vendorlibdir}' \
+	--with-vendorarchdir='%{ruby_vendorarchdir}' \
+	--with-rubyhdrdir='%{_includedir}' \
+        --with-rubyarchhdrdir='$(archincludedir)' \
+        --with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
+        --with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
+        --with-rubygemsdir='%{rubygems_dir}' \
+        --with-ruby-pc='%{name}.pc' \
+        --enable-multiarch \
+        --with-ruby-version=''
 %make
 
 %install
 %makeinstall_std install-doc
 
-install -d %{buildroot}%{_docdir}/%{name}-%{version}
-cp -a COPYING* ChangeLog README* ToDo sample %{buildroot}%{_docdir}/%{name}-%{version}
-install -m644 %{SOURCE1} -D %{buildroot}%{_docdir}/%{name}-%{version}/FAQ.html
+install -d %buildroot%{_datadir}/emacs/site-lisp
+cp -a misc/ruby-mode.el %buildroot%{_datadir}/emacs/site-lisp
 
-install -m644 %{SOURCE4} -D %{buildroot}%{_datadir}/emacs/site-lisp/ruby-mode.el
-
-install -d %{buildroot}%{_sysconfdir}/emacs/site-start.d
-cat <<EOF >%{buildroot}%{_sysconfdir}/emacs/site-start.d/%{name}.el
+install -d %buildroot%{_sysconfdir}/emacs/site-start.d
+cat <<EOF >%buildroot%{_sysconfdir}/emacs/site-start.d/%{name}.el
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (add-to-list 'auto-mode-alist '("\\\\.rb$" . ruby-mode))
 (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
 EOF
 
-tar -C %{buildroot}%{_docdir}/%{name}-%{version} -xjf %{SOURCE2}
-mv %{buildroot}%{_docdir}/%{name}-%{version}/ProgrammingRuby-*/{html/*,}
-rm -rf %{buildroot}%{_docdir}/%{name}-%{version}/ProgrammingRuby-*/{html,xml}/
+# Install custom operating_system.rb
+mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
+cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 
-# Make the file/dirs list, filtering out tcl/tk and devel files
-find %{buildroot}%{_prefix}/lib/ruby/%{abiver} \
-          \( -not -type d -printf "%%p\n" \) \
-          -or \( -type d -printf "%%%%dir %%p\n" \) \
-| sed -e 's#%{buildroot}##g' \
-| egrep -v '/(tcl)?tk|(%{my_target_cpu}-%{_target_os}/.*[ha]$)' > %{name}.list
+# drop gems if not wanted, so that we could split them out as seperated source rpm
+%if !%{with gems}
+rm -f %{buildroot}%{_bindir}/{rake,rdoc,ri,testrb}
+rm -f %{buildroot}%{_mandir}/man1/{rake,ri}.*
+rm -fr %{buildroot}%{ruby_libdir}/{minitest,rake,rdoc,json,bigdecimal,io,test}
+rm -fr %{buildroot}%{ruby_libarchdir}/{json,bigdecimal.so,io/console.so}
+rm -fr %{buildroot}%{rubygems_dir}/{gems,specifications}
+%if !%{with bootstrap}
+rm -f %{buildroot}%{_bindir}/gem
+rm -fr %{buildroot}%{rubygems_dir}/rbconfig
+rm -fr %{buildroot}%{rubygems_dir}/rubygems
+rm -f %{buildroot}%{rubygems_dir}/rubygems.rb
+rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
+%endif
+%endif
 
-# Fix scripts permissions and location
-find %{buildroot} sample -type f | file -i -f - | grep text | cut -d: -f1 >text.list
-cat text.list | xargs chmod 0644
-#  Magic grepping to get only files with '#!' in the first line
-cat text.list | xargs grep -n '^#!' | grep ':1:#!' | cut -d: -f1 >shebang.list
-cat shebang.list | xargs sed -i -e 's|/usr/local/bin|/usr/bin|; s|\./ruby|/usr/bin/ruby|'
-cat shebang.list | xargs chmod 0755
+#% check
+#make test
 
-%check
-make test
-
-%files -f %{name}.list
-%dir %{_docdir}/%{name}-%{version}
-%doc %{_docdir}/%{name}-%{version}/README
-%doc %{_docdir}/%name
-%{_bindir}/*
-%dir %{_prefix}/lib/%{name}/
-%{_mandir}/*/*
+%files
+%{_bindir}/erb
+%{_bindir}/ruby
+%dir %{ruby_libdir}
+%{ruby_libdir}/*.rb
+%exclude %{ruby_libdir}/irb.rb
+%exclude %{ruby_libdir}/multi-tk.rb
+%exclude %{ruby_libdir}/remote-tk.rb
+%exclude %{ruby_libdir}/tcltk.rb
+%exclude %{ruby_libdir}/tk.rb
+%exclude %{ruby_libdir}/tkafter.rb
+%exclude %{ruby_libdir}/tkbgerror.rb
+%exclude %{ruby_libdir}/tkcanvas.rb
+%exclude %{ruby_libdir}/tkclass.rb
+%exclude %{ruby_libdir}/tkconsole.rb
+%exclude %{ruby_libdir}/tkdialog.rb
+%exclude %{ruby_libdir}/tkentry.rb
+%exclude %{ruby_libdir}/tkfont.rb
+%exclude %{ruby_libdir}/tkmacpkg.rb
+%exclude %{ruby_libdir}/tkmenubar.rb
+%exclude %{ruby_libdir}/tkmngfocus.rb
+%exclude %{ruby_libdir}/tkpalette.rb
+%exclude %{ruby_libdir}/tkscrollbox.rb
+%exclude %{ruby_libdir}/tktext.rb
+%exclude %{ruby_libdir}/tkvirtevent.rb
+%exclude %{ruby_libdir}/tkwinpkg.rb
+%{ruby_libdir}/cgi
+%{ruby_libdir}/date
+%{ruby_libdir}/digest
+%{ruby_libdir}/dl
+%{ruby_libdir}/drb
+%{ruby_libdir}/fiddle
+%{ruby_libdir}/matrix
+%{ruby_libdir}/net
+%{ruby_libdir}/openssl
+%{ruby_libdir}/optparse
+%{ruby_libdir}/psych
+%{ruby_libdir}/racc
+%{ruby_libdir}/rbconfig
+%{ruby_libdir}/rexml
+%{ruby_libdir}/rinda
+%{ruby_libdir}/ripper
+%{ruby_libdir}/rss
+%{ruby_libdir}/shell
+%{ruby_libdir}/syslog
+%{ruby_libdir}/uri
+%{ruby_libdir}/webrick
+%{ruby_libdir}/xmlrpc
+%{ruby_libdir}/yaml
+%dir %{ruby_libarchdir}
+%{ruby_libarchdir}/continuation.so
+%{ruby_libarchdir}/coverage.so
+%{ruby_libarchdir}/curses.so
+%{ruby_libarchdir}/date_core.so
+%{ruby_libarchdir}/dbm.so
+%dir %{ruby_libarchdir}/digest
+%{ruby_libarchdir}/digest.so
+%{ruby_libarchdir}/digest/*.so
+%dir %{ruby_libarchdir}/dl
+%{ruby_libarchdir}/dl.so
+%{ruby_libarchdir}/dl/*.so
+%dir %{ruby_libarchdir}/enc
+%{ruby_libarchdir}/enc/*.so
+%dir %{ruby_libarchdir}/enc/trans
+%{ruby_libarchdir}/enc/trans/*.so
+%{ruby_libarchdir}/etc.so
+%{ruby_libarchdir}/fcntl.so
+%{ruby_libarchdir}/fiber.so
+%{ruby_libarchdir}/fiddle.so
+%{ruby_libarchdir}/gdbm.so
+%dir %{ruby_libarchdir}/io
+%{ruby_libarchdir}/io/nonblock.so
+%{ruby_libarchdir}/io/wait.so
+%dir %{ruby_libarchdir}/mathn
+%{ruby_libarchdir}/mathn/*.so
+%{ruby_libarchdir}/nkf.so
+%{ruby_libarchdir}/objspace.so
+%{ruby_libarchdir}/openssl.so
+%{ruby_libarchdir}/psych.so
+%{ruby_libarchdir}/pathname.so
+%{ruby_libarchdir}/pty.so
+%dir %{ruby_libarchdir}/racc
+%{ruby_libarchdir}/racc/*.so
+%{ruby_libarchdir}/rbconfig.rb
+%{ruby_libarchdir}/readline.so
+%{ruby_libarchdir}/ripper.so
+%{ruby_libarchdir}/sdbm.so
+%{ruby_libarchdir}/socket.so
+%{ruby_libarchdir}/stringio.so
+%{ruby_libarchdir}/strscan.so
+%{ruby_libarchdir}/syslog.so
+%{ruby_libarchdir}/zlib.so
+%{_mandir}/man1/erb.1.*
+%{_mandir}/man1/ruby.1.*
 %{_datadir}/emacs/site-lisp/*
-%dir %_prefix/lib/%name/gems/%abiver/gems
-%dir %_prefix/lib/%name/gems/%abiver/gems/rake-*
-%dir %_prefix/lib/%name/gems/%abiver/gems/rake-*/bin
-%{_prefix}/lib/%{name}/gems/%{abiver}/gems/rake-*/bin/rake
-%dir %{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*
-%dir %{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin
-%{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin/rdoc
-%{_prefix}/lib/%{name}/gems/%{abiver}/gems/rdoc-*/bin/ri
-%dir %_prefix/lib/%name/gems/%abiver/specifications
-%{_prefix}/lib/%{name}/gems/%{abiver}/specifications/*.gemspec
 %config(noreplace) %{_sysconfdir}/emacs/site-start.d/*
-
-%files -n %{libname}
-%{_libdir}/libruby.so.%{subver}*
+%{_datadir}/ruby/site_ruby
+%{_libdir}/ruby/site_ruby
+%{_datadir}/ruby/vendor_ruby
+%{_libdir}/ruby/vendor_ruby
+%if %{with bootstrap}
+%{_bindir}/gem
+%dir %{rubygems_dir}
+%{rubygems_dir}/rbconfig
+%{rubygems_dir}/rubygems
+%{rubygems_dir}/rubygems.rb
+%{rubygems_dir}/ubygems.rb
+%endif
 
 %files doc
 %{_datadir}/ri
-%dir %{_docdir}/%{name}-%{version}
-%{_docdir}/%{name}-%{version}/COPYING*
-%{_docdir}/%{name}-%{version}/ChangeLog
-%{_docdir}/%{name}-%{version}/README.*
-%{_docdir}/%{name}-%{version}/FAQ.html
-%{_docdir}/%{name}-%{version}/ToDo
-%{_docdir}/%{name}-%{version}/sample
-%{_docdir}/%{name}-%{version}/ProgrammingRuby*
+%{_datadir}/doc/ruby
+
+%files -n %{libname}
+%{_libdir}/libruby.so.%{subver}
+%{_libdir}/libruby.so.%{rubyapi}
 
 %files devel
-%{_includedir}/ruby-*
+%{_includedir}/*
 %{_libdir}/libruby-static.a
 %{_libdir}/libruby.so
-%{_libdir}/pkgconfig/ruby-%{subver}.pc
+%{_libdir}/pkgconfig/*.pc
 
 %if %{with tcltk}
 %files tk
-%{_prefix}/lib/%{name}/%{abiver}/%{my_target_cpu}-%{_target_os}/tcltk*
-%{_prefix}/lib/%{name}/%{abiver}/%{my_target_cpu}-%{_target_os}/tk*
-%{_prefix}/lib/%{name}/%{abiver}/tcltk*
-%{_prefix}/lib/%{name}/%{abiver}/tk*
+%{ruby_libarchdir}/tcltklib.so
+%{ruby_libarchdir}/tkutil.so
+%{ruby_libdir}/multi-tk.rb
+%{ruby_libdir}/remote-tk.rb
+%{ruby_libdir}/tcltk.rb
+%{ruby_libdir}/tk.rb
+%{ruby_libdir}/tkafter.rb
+%{ruby_libdir}/tkbgerror.rb
+%{ruby_libdir}/tkcanvas.rb
+%{ruby_libdir}/tkclass.rb
+%{ruby_libdir}/tkconsole.rb
+%{ruby_libdir}/tkdialog.rb
+%{ruby_libdir}/tkentry.rb
+%{ruby_libdir}/tkfont.rb
+%{ruby_libdir}/tkmacpkg.rb
+%{ruby_libdir}/tkmenubar.rb
+%{ruby_libdir}/tkmngfocus.rb
+%{ruby_libdir}/tkpalette.rb
+%{ruby_libdir}/tkscrollbox.rb
+%{ruby_libdir}/tktext.rb
+%{ruby_libdir}/tkvirtevent.rb
+%{ruby_libdir}/tkwinpkg.rb
+%{ruby_libdir}/tk
+%{ruby_libdir}/tkextlib
 %endif
 
+%files irb
+%{_bindir}/irb
+%{ruby_libdir}/irb.rb
+%{ruby_libdir}/irb
+%{_mandir}/man1/irb.1*
 
-%changelog
-* Wed May 16 2012 Bernhard Rosenkraenzer <bero@bero.eu> 1.9.3.p194-2
-+ Revision: 799161
-- Obsolete ruby-RubyGems, it's part of ruby in 1.9.x
+%if %{with gems}
+%files RubyGems
+%{_bindir}/gem
+%dir %{rubygems_dir}
+%{rubygems_dir}/rbconfig
+%{rubygems_dir}/rubygems
+%{rubygems_dir}/rubygems.rb
+%{rubygems_dir}/ubygems.rb
 
+%files minitest
+%{ruby_libdir}/minitest
+%{rubygems_dir}/specifications/default/minitest-*.gemspec
+
+%files rake
+%{_bindir}/rake
+%{_mandir}/man1/rake.1.*
+%{ruby_libdir}/rake
+%{rubygems_dir}/gems/rake-*
+%{rubygems_dir}/specifications/default/rake-*.gemspec
+
+%files rdoc
+%{_bindir}/rdoc
+%{_bindir}/ri
+%{ruby_libdir}/rdoc
+%{rubygems_dir}/gems/rdoc-*
+%{rubygems_dir}/specifications/default/rdoc-*.gemspec
+%{_mandir}/man1/ri.1.*
+
+%files json
+%dir %{ruby_libarchdir}/json
+%dir %{ruby_libarchdir}/json/ext
+%{ruby_libarchdir}/json/ext/*.so
+%{ruby_libdir}/json
+%{rubygems_dir}/specifications/default/json-*.gemspec
+
+%files bigdecimal
+%{ruby_libdir}/bigdecimal
+%{ruby_libarchdir}/bigdecimal.so
+%{rubygems_dir}/specifications/default/bigdecimal-*.gemspec
+
+%files io-console
+%{ruby_libdir}/io
+%{ruby_libarchdir}/io/console.so
+%{rubygems_dir}/specifications/default/io-console-*.gemspec
+
+%files psych
+%{ruby_libdir}/psych
+%{ruby_libarchdir}/psych.so
+%{rubygems_dir}/specifications/default/psych-*.gemspec
+
+%files test-unit
+%{_bindir}/testrb
+%{ruby_libdir}/test
+%{rubygems_dir}/gems/test-unit-*
+%{rubygems_dir}/specifications/default/test-unit-*.gemspec
+%endif
