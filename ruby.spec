@@ -23,13 +23,13 @@
 %define rubygems_version 2.0.2
 
 %bcond_without bootstrap
-%bcond_with gems
+%bcond_without gems
 %bcond_without tcltk
 
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	1
+Release: 	3
 License:	Ruby or BSD
 Group:		Development/Ruby
 BuildRequires:	autoconf
@@ -52,7 +52,7 @@ Provides:	ruby-rexml
 Provides:	rubygem(psych)
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
-Provides:	ruby(abi) = %rubyapi
+Provides:	ruby(abi) = %subver
 Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
 Source1:	operating_system.rb
 URL:		http://www.ruby-lang.org/
@@ -352,8 +352,8 @@ cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 %if !%{with gems}
 rm -f %{buildroot}%{_bindir}/{rake,rdoc,ri,testrb}
 rm -f %{buildroot}%{_mandir}/man1/{rake,ri}.*
-rm -fr %{buildroot}%{ruby_libdir}/{minitest,rake,rdoc,json,bigdecimal,io,test}
-rm -fr %{buildroot}%{ruby_libarchdir}/{json,bigdecimal.so,io/console.so}
+rm -fr %{buildroot}%{ruby_libdir}/{minitest,rake,rdoc,json,bigdecimal,io,test,psych}
+rm -fr %{buildroot}%{ruby_libarchdir}/{json,bigdecimal.so,io/console.so,psych.so}
 rm -fr %{buildroot}%{rubygems_dir}/{gems,specifications}
 %if !%{with bootstrap}
 rm -f %{buildroot}%{_bindir}/gem
@@ -403,7 +403,6 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libdir}/net
 %{ruby_libdir}/openssl
 %{ruby_libdir}/optparse
-%{ruby_libdir}/psych
 %{ruby_libdir}/racc
 %{ruby_libdir}/rbconfig
 %{ruby_libdir}/rexml
@@ -445,7 +444,6 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libarchdir}/nkf.so
 %{ruby_libarchdir}/objspace.so
 %{ruby_libarchdir}/openssl.so
-%{ruby_libarchdir}/psych.so
 %{ruby_libarchdir}/pathname.so
 %{ruby_libarchdir}/pty.so
 %dir %{ruby_libarchdir}/racc
@@ -467,14 +465,6 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{_libdir}/ruby/site_ruby
 %{_datadir}/ruby/vendor_ruby
 %{_libdir}/ruby/vendor_ruby
-%if %{with bootstrap}
-%{_bindir}/gem
-%dir %{rubygems_dir}
-%{rubygems_dir}/rbconfig
-%{rubygems_dir}/rubygems
-%{rubygems_dir}/rubygems.rb
-%{rubygems_dir}/ubygems.rb
-%endif
 
 %files doc
 %{_datadir}/ri
