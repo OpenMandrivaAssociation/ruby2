@@ -29,7 +29,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	5
+Release: 	6
 License:	Ruby or BSD
 Group:		Development/Ruby
 BuildRequires:	autoconf
@@ -56,7 +56,6 @@ Source1:	operating_system.rb
 URL:		http://www.ruby-lang.org/
 %if !%{with bootstrap}
 Requires:	rubygems >= %{rubygems_version}
-Requires:	rubygem(psych)
 BuildRequires:	ruby
 %endif
 
@@ -149,6 +148,9 @@ Summary:	The Ruby standard for packaging ruby libraries
 Group:		Development/Ruby
 Version:	%{rubygems_version}
 Requires:	ruby(abi) = %{subver}
+Requires:       rdoc
+Requires:	rubygem(psych)
+Requires:	ruby(irb)
 Provides:	gem = %{rubygems_version}
 Provides:	rubygems = %{rubygems_version}
 Provides:	ruby(rubygems) = %{rubygems_version}
