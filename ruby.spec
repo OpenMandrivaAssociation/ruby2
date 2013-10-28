@@ -56,6 +56,9 @@ Source1:	operating_system.rb
 URL:		http://www.ruby-lang.org/
 %if !%{with bootstrap}
 Requires:	rubygems >= %{rubygems_version}
+Requires:	rubygem(psych)
+Requires:	ruby(irb)
+Requires:	ruby(bigdecimal)
 BuildRequires:	ruby
 %endif
 
@@ -149,9 +152,6 @@ Group:		Development/Ruby
 Version:	%{rubygems_version}
 Requires:	ruby(abi) = %{subver}
 Requires:       rdoc
-Requires:	rubygem(psych)
-Requires:	ruby(irb)
-Requires:	bigdecimal
 Provides:	gem = %{rubygems_version}
 Provides:	rubygems = %{rubygems_version}
 Provides:	ruby(rubygems) = %{rubygems_version}
@@ -250,6 +250,7 @@ Summary:	BigDecimal provides arbitrary-precision floating point decimal arithmet
 Group:		Development/Ruby
 Version:	%{bigdecimal_ver}
 License:	GPL+ or Artistic
+Provides:	ruby(bigdecimal)
 Requires:	ruby(abi) = %{subver}
 Requires:	ruby(rubygems) >= %{rubygems_version}
 
