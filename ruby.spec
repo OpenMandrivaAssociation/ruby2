@@ -151,6 +151,7 @@ Requires:	ruby(abi) = %{subver}
 Requires:       rdoc
 Requires:	rubygem(psych)
 Requires:	ruby(irb)
+Requires:	bigdecimal
 Provides:	gem = %{rubygems_version}
 Provides:	rubygems = %{rubygems_version}
 Provides:	ruby(rubygems) = %{rubygems_version}
