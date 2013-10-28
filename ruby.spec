@@ -29,7 +29,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	4
+Release: 	5
 License:	Ruby or BSD
 Group:		Development/Ruby
 BuildRequires:	autoconf
@@ -48,8 +48,6 @@ BuildRequires:	pkgconfig(libffi)
 BuildRequires:	yaml-devel
 Obsoletes:	ruby-rexml
 Provides:	ruby-rexml
-# Couldn't get the standalone gem to work
-Provides:	rubygem(psych)
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
 Provides:	ruby(abi) = %subver
@@ -58,6 +56,7 @@ Source1:	operating_system.rb
 URL:		http://www.ruby-lang.org/
 %if !%{with bootstrap}
 Requires:	rubygems >= %{rubygems_version}
+Requires:	rubygem(psych)
 BuildRequires:	ruby
 %endif
 
@@ -282,6 +281,7 @@ provide higher layer features, such like curses and readline.
 Summary:	A libyaml wrapper for Ruby
 Version:	%{psych_ver}
 Group:		Development/Ruby
+Provides:	rubygem(psych)
 License:	MIT
 Requires:	ruby(abi) = %{subver}
 Requires:	ruby(rubygems) >= %{rubygems_version}
