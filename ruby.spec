@@ -65,6 +65,9 @@ BuildRequires:	ruby
 # == FEDORA PATCHES BEGINS ==
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+# Force multiarch directories for i.86 to be always named i386. This solves
+# some differencies in build between Fedora and RHEL.
+Patch3: ruby-1.9.3-always-use-i386.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
 Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
@@ -87,10 +90,29 @@ Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.pat
 # This prevents issues, when ruby configuration specifies --with-ruby-version=''.
 # https://github.com/rubygems/rubygems/pull/455
 Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
+# Although this does not directly affects Fedora ATM, it might be issue when
+# rebuilding package on different platform (RHEL7). Please keep the patch until
+# it is resolved in upstream.
+# https://bugs.ruby-lang.org/issues/8384
+Patch15: ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
+# Adds aarch64 support.
+# http://bugs.ruby-lang.org/issues/8331
+# https://bugzilla.redhat.com/show_bug.cgi?id=926463
+# Please note that this is the BZ patch, it might be good idea to update it
+# with its upstream version when available.
+Patch16: ruby-2.0.0-p195-aarch64.patch
+# Adds support for '--with-prelude' configuration option. This allows to built
+# in support for ABRT.
+# http://bugs.ruby-lang.org/issues/8566
+Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Fixes issues with DESTDIR.
 # https://bugs.ruby-lang.org/issues/8115
 Patch18: ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
+# Fixes multilib conlicts of .gemspec files.
+# https://bugs.ruby-lang.org/issues/8623
+Patch19: ruby-2.0.0-p247-Make-stable-Gem-Specification.files-in-default-.gems.patch
 # == FEDORA PATCHES ENDS ==
+
 %description
 Ruby is the interpreted scripting language for quick and
 easy object-oriented programming.  It has many features to
