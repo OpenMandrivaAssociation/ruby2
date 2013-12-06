@@ -29,7 +29,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	10
+Release: 	11
 License:	Ruby or BSD
 Group:		Development/Ruby
 BuildRequires:	autoconf
