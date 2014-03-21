@@ -1,9 +1,9 @@
-%define subver 2.0
-%define rubyapi 2.0.0
 %define rubyver 2.0.0
+%define subver %(echo %{rubyver}|cut -d. -f1,2)
 %define patchversion p247
 
 %define libname %mklibname ruby %{subver}
+%define devname %mklibname ruby -d
 
 %define ruby_libdir %{_datadir}/%{name}
 %define ruby_libarchdir %{_libdir}/%{name}
@@ -29,89 +29,88 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	%{rubyver}.%{patchversion}
-Release: 	12
+Release:	13
 License:	Ruby or BSD
 Group:		Development/Ruby
-BuildRequires:	autoconf
-BuildRequires:	byacc
-BuildRequires:	doxygen
-BuildRequires:	ncurses-devel
-BuildRequires:	readline-devel
-%if %{with tcltk}
-BuildRequires:  tcl-devel tk-devel
-%endif
-BuildRequires:	db-devel
-BuildRequires:  gdbm-devel >= 1.8.3
-BuildRequires:  openssl-devel
-BuildRequires:	zlib-devel
-BuildRequires:	pkgconfig(libffi)
-BuildRequires:	yaml-devel
-Obsoletes:	ruby-rexml
-Provides:	ruby-rexml
-# explicit file provides (since such requires are automatically added by find-requires)
-Provides:	/usr/bin/ruby
-Provides:	ruby(abi) = %subver
+Url:		http://www.ruby-lang.org/
 Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
 Source1:	operating_system.rb
-URL:		http://www.ruby-lang.org/
-%if !%{with bootstrap}
-Requires:	rubygems >= %{rubygems_version}
-Requires:	rubygem(psych)
-Requires:	ruby(irb)
-Requires:	ruby(bigdecimal)
-BuildRequires:	ruby
-%endif
-
 # == FEDORA PATCHES BEGINS ==
 # http://bugs.ruby-lang.org/issues/7807
-Patch0: ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+Patch0:		ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
-Patch3: ruby-1.9.3-always-use-i386.patch
+Patch3:		ruby-1.9.3-always-use-i386.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
-Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
+Patch5:		ruby-1.9.3.p195-fix-webrick-tests.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
-Patch8: ruby-1.9.3-custom-rubygems-location.patch
+Patch8:		ruby-1.9.3-custom-rubygems-location.patch
 # Add support for installing binary extensions according to FHS.
 # https://github.com/rubygems/rubygems/issues/210
 # Note that 8th patch might be resolved by
 # https://bugs.ruby-lang.org/issues/7897
-Patch9: rubygems-2.0.0-binary-extensions.patch
+Patch9:		rubygems-2.0.0-binary-extensions.patch
 # Make mkmf verbose by default
-Patch12: ruby-1.9.3-mkmf-verbose.patch
+Patch12:	ruby-1.9.3-mkmf-verbose.patch
 # This slightly changes behavior of "gem install --install-dir" behavior.
 # Without this patch, Specifications.dirs is modified and gems installed on
 # the system cannot be required anymore. This causes later issues when RDoc
 # documentation should be generated, since json gem is sudenly not accessible.
 # https://github.com/rubygems/rubygems/pull/452
-Patch13: rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
+Patch13:	rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
 # This prevents issues, when ruby configuration specifies --with-ruby-version=''.
 # https://github.com/rubygems/rubygems/pull/455
-Patch14: rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
+Patch14:	rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
 # Although this does not directly affects Fedora ATM, it might be issue when
 # rebuilding package on different platform (RHEL7). Please keep the patch until
 # it is resolved in upstream.
 # https://bugs.ruby-lang.org/issues/8384
-Patch15: ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
+Patch15:	ruby-2.0.0-p195-Fix-build-against-OpenSSL-with-enabled-ECC-curves.patch
 # Adds aarch64 support.
 # http://bugs.ruby-lang.org/issues/8331
 # https://bugzilla.redhat.com/show_bug.cgi?id=926463
 # Please note that this is the BZ patch, it might be good idea to update it
 # with its upstream version when available.
-Patch16: ruby-2.0.0-p195-aarch64.patch
+Patch16:	ruby-2.0.0-p195-aarch64.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
-Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+Patch17:	ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Fixes issues with DESTDIR.
 # https://bugs.ruby-lang.org/issues/8115
-Patch18: ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
+Patch18:	ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
 # Fixes multilib conlicts of .gemspec files.
 # https://bugs.ruby-lang.org/issues/8623
-Patch19: ruby-2.0.0-p247-Make-stable-Gem-Specification.files-in-default-.gems.patch
+Patch19:	ruby-2.0.0-p247-Make-stable-Gem-Specification.files-in-default-.gems.patch
 # == FEDORA PATCHES ENDS ==
+
+BuildRequires:	byacc
+BuildRequires:	doxygen
+BuildRequires:	db-devel
+BuildRequires:	gdbm-devel >= 1.8.3
+BuildRequires:	readline-devel
+BuildRequires:	yaml-devel
+BuildRequires:	pkgconfig(ncurses)
+BuildRequires:	pkgconfig(openssl)
+BuildRequires:	pkgconfig(zlib)
+BuildRequires:	pkgconfig(libffi)
+%if %{with tcltk}
+BuildRequires:	pkgconfig(tcl)
+BuildRequires:	pkgconfig(tk)
+%endif
+%rename	ruby-rexml
+# explicit file provides (since such requires are automatically added by find-requires)
+Provides:	/usr/bin/ruby
+Provides:	ruby(abi) = %subver
+%if !%{with bootstrap}
+BuildRequires:	ruby
+Requires:	rubygems >= %{rubygems_version}
+Requires:	rubygem(psych)
+Requires:	ruby(irb)
+Requires:	ruby(bigdecimal)
+%endif
 
 %description
 Ruby is the interpreted scripting language for quick and
@@ -124,7 +123,7 @@ Summary:	Libraries necessary to run Ruby
 Group:		Development/Ruby
 
 %description	-n %{libname}
-This package includes the libruby, necessary to run Ruby.
+This package includes the shared library for %{name}.
 
 %package	doc
 Summary:	Documentation for the powerful language Ruby
@@ -132,25 +131,16 @@ Group:		Development/Ruby
 BuildArch:	noarch
 
 %description	doc
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl). It is simple, straight-forward, and extensible.
+This package contains the documentation for Ruby.
 
-This package contains the Ruby's documentation
-
-%package	devel
+%package -n	%{devname}
 Summary:	Development file for the powerful language Ruby
 Group:		Development/Ruby
-Requires:	%{name} = %{version}
-Requires:	%{libname} = %{version}
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{libname} = %{version}-%{release}
+Obsoletes:	ruby-devel < 2.0.0.p247-13
 
-%description	devel
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl). It is simple, straight-forward, and extensible.
-
+%description -n	%{devname}
 This package contains the Ruby's devel files.
 
 %if %{with tcltk}
@@ -160,11 +150,6 @@ Group:		Development/Ruby
 Requires:	%{name} = %{version}
 
 %description	tk
-Ruby is the interpreted scripting language for quick and
-easy object-oriented programming.  It has many features to
-process text files and to do system management tasks (as in
-Perl). It is simple, straight-forward, and extensible.
-
 This package contains the Tk extension for Ruby.
 %endif
 
@@ -173,7 +158,7 @@ Summary:	The Ruby standard for packaging ruby libraries
 Group:		Development/Ruby
 Version:	%{rubygems_version}
 Requires:	ruby(abi) = %{subver}
-Requires:       rdoc
+Requires:	rdoc
 Provides:	gem = %{rubygems_version}
 Provides:	rubygems = %{rubygems_version}
 Provides:	ruby(rubygems) = %{rubygems_version}
@@ -219,7 +204,6 @@ framework.
 minitest/pride shows pride in testing and adds coloring to your test
 output.
 
-
 %define json_ver 1.7.7
 %package	json
 Summary:	This is a JSON implementation as a Ruby extension in C
@@ -234,7 +218,6 @@ This is a implementation of the JSON specification according to RFC 4627.
 You can think of it as a low fat alternative to XML, if you want to store
 data to disk or transmit it over a network rather than use a verbose
 markup language.
-
 
 %define rdoc_ver 4.0.0
 %package	rdoc
@@ -319,7 +302,6 @@ libyaml[http://pyyaml.org/wiki/LibYAML] for its YAML parsing and emitting
 capabilities. In addition to wrapping libyaml, Psych also knows how to
 serialize and de-serialize most Ruby objects to and from the YAML format.
 
-
 %define test_unit_ver 2.0.0
 %package test-unit
 Summary:	test/unit compatible API testing framework
@@ -332,15 +314,18 @@ Conflicts:	ruby < 2.0.0
 BuildArch:	noarch
 
 %prep
-%setup -q -n ruby-%{rubyver}-%{patchversion}
+%setup -qn ruby-%{rubyver}-%{patchversion}
 %apply_patches
 # When patching mkmf.rb the mkmf.rb.0010 gets installed
 rm lib/mkmf.rb.0*
 
-%build
 autoconf
+
+%build
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
-%configure2_5x --enable-shared --disable-rpath --enable-pthread \
+%configure2_5x \
+	--enable-shared \
+	--enable-pthread \
 	--with-rubylibprefix='%{ruby_libdir}' \
         --with-rubyarchprefix='%{ruby_libarchdir}' \
 	--with-sitedir='%{ruby_sitelibdir}' \
@@ -360,11 +345,11 @@ CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
 %install
 %makeinstall_std install-doc
 
-install -d %buildroot%{_datadir}/emacs/site-lisp
-cp -a misc/ruby-mode.el %buildroot%{_datadir}/emacs/site-lisp
+install -d %{buildroot}%{_datadir}/emacs/site-lisp
+cp -a misc/ruby-mode.el %{buildroot}%{_datadir}/emacs/site-lisp
 
-install -d %buildroot%{_sysconfdir}/emacs/site-start.d
-cat <<EOF >%buildroot%{_sysconfdir}/emacs/site-start.d/%{name}.el
+install -d %{buildroot}%{_sysconfdir}/emacs/site-start.d
+cat <<EOF >%{buildroot}%{_sysconfdir}/emacs/site-start.d/%{name}.el
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (add-to-list 'auto-mode-alist '("\\\\.rb$" . ruby-mode))
 (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
@@ -495,10 +480,9 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{_datadir}/doc/ruby
 
 %files -n %{libname}
-%{_libdir}/libruby.so.%{subver}
-%{_libdir}/libruby.so.%{rubyapi}
+%{_libdir}/libruby.so.%{subver}*
 
-%files devel
+%files -n %{devname}
 %{_includedir}/*
 %{_libdir}/libruby-static.a
 %{_libdir}/libruby.so
