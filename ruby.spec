@@ -20,7 +20,7 @@
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
 %define rubygems_dir %{_datadir}/ruby/gems
-%define rubygems_version 2.0.2
+%define rubygems_version 2.0.14
 
 %bcond_with bootstrap
 %bcond_without gems
