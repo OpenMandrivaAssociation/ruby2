@@ -317,6 +317,9 @@ autoconf
 
 %build
 CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
+%ifarch aarch64
+export rb_cv_pri_prefix_long_long=ll
+%endif
 %configure2_5x \
 	--enable-shared \
 	--enable-pthread \
