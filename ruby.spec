@@ -360,6 +360,8 @@ cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 %if %{with gems}
 # Something broken or missing in configure
 mv %{buildroot}%{_datadir}/gems/gems/* %{buildroot}%{rubygems_dir}/
+rmdir %{buildroot}%{_datadir}/gems/gems/
+mv %{buildroot}%{_datadir}/gems/* %{buildroot}%{rubygems_dir}/
 %else
 rm -f %{buildroot}%{_bindir}/{rake,rdoc,ri,testrb}
 rm -f %{buildroot}%{_mandir}/man1/{rake,ri}.*
@@ -541,14 +543,14 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{_bindir}/rake
 %{_mandir}/man1/rake.1.*
 %{ruby_libdir}/rake
-%{rubygems_dir}/gems/rake-*
+%{rubygems_dir}/rake-*
 %{rubygems_dir}/specifications/default/rake-*.gemspec
 
 %files rdoc
 %{_bindir}/rdoc
 %{_bindir}/ri
 %{ruby_libdir}/rdoc
-%{rubygems_dir}/gems/rdoc-*
+%{rubygems_dir}/rdoc-*
 %{rubygems_dir}/specifications/default/rdoc-*.gemspec
 %{_mandir}/man1/ri.1.*
 
@@ -577,6 +579,6 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %files test-unit
 %{_bindir}/testrb
 %{ruby_libdir}/test
-%{rubygems_dir}/gems/test-unit-*
+%{rubygems_dir}/test-unit-*
 %{rubygems_dir}/specifications/default/test-unit-*.gemspec
 %endif
