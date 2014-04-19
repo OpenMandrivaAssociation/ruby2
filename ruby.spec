@@ -358,8 +358,8 @@ cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 
 # drop gems if not wanted, so that we could split them out as seperated source rpm
 %if %{with gems}
-# apparently there is something adding an extra gems subdir to the path
-mv %{buildroot}%{rubygems_dir}/gems/* %{buildroot}%{rubygems_dir}/
+# Something broken or missing in configure
+mv %{buildroot}%{_datadir}/gems/gems/* %{buildroot}%{rubygems_dir}/
 %else
 rm -f %{buildroot}%{_bindir}/{rake,rdoc,ri,testrb}
 rm -f %{buildroot}%{_mandir}/man1/{rake,ri}.*
