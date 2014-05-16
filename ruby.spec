@@ -1,4 +1,4 @@
-%define rubyver 2.1.1
+%define rubyver 2.1.2
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
 
 %define libname %mklibname ruby %{subver}
@@ -64,9 +64,6 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
 Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# https://www.ruby-lang.org/en/news/2014/03/10/regression-of-hash-reject-in-ruby-2-1-1/
-Patch18: ruby-2.1.2-p79-hash.c-extra-states.patch
-Patch19:	ruby-2.0.0-p451-readline.patch
 Patch20:	ruby-2.1.1-Do-not-install-to-user-dir.patch
 
 BuildRequires:	byacc
