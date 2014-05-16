@@ -1,6 +1,5 @@
-%define rubyver 2.0.0
+%define rubyver 2.1.1
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
-%define patchversion p451
 
 %define libname %mklibname ruby %{subver}
 %define devname %mklibname ruby -d
@@ -20,65 +19,55 @@
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
 %define rubygems_dir %{_datadir}/ruby/gems
-%define rubygems_version 2.0.14
+%define rubygems_version 2.2.2
+%define rake_ver 10.1.0
+%define minitest_ver 4.7.5
+%define json_ver 1.8.1
+%define rdoc_ver 4.1.0
+%define bigdecimal_ver 1.2.4
+%define io_console_ver 0.4.2
+%define psych_ver 2.0.3
+%define test_unit_ver 2.0.0.2
 
 %bcond_without bootstrap
 %bcond_without gems
 %bcond_with tcltk
 
 Summary:	Object Oriented Script Language
+
 Name:		ruby
-Version:	%{rubyver}.%{patchversion}
-Release:	13
+Version:	%{rubyver}
+Release:	1
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
-Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}-%{patchversion}.tar.bz2
+Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}.tar.bz2
 Source1:	operating_system.rb
-# == FEDORA PATCHES BEGINS ==
 # http://bugs.ruby-lang.org/issues/7807
-Patch0:		ruby-2.0.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+# Allows to override libruby.so placement. Hopefully we will be able to return
+# to plain --with-rubyarchprefix.
+# http://bugs.ruby-lang.org/issues/8973
+Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
-Patch3:		ruby-1.9.3-always-use-i386.patch
+Patch3: ruby-2.1.0-always-use-i386.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
-Patch5:		ruby-1.9.3.p195-fix-webrick-tests.patch
+Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://redmine.ruby-lang.org/issues/5617
-Patch8:		ruby-1.9.3-custom-rubygems-location.patch
-# Add support for installing binary extensions according to FHS.
-# https://github.com/rubygems/rubygems/issues/210
-# Note that 8th patch might be resolved by
-# https://bugs.ruby-lang.org/issues/7897
-Patch9:		rubygems-2.0.0-binary-extensions.patch
+Patch8: ruby-2.1.0-custom-rubygems-location.patch
 # Make mkmf verbose by default
-Patch12:	ruby-1.9.3-mkmf-verbose.patch
-# This slightly changes behavior of "gem install --install-dir" behavior.
-# Without this patch, Specifications.dirs is modified and gems installed on
-# the system cannot be required anymore. This causes later issues when RDoc
-# documentation should be generated, since json gem is sudenly not accessible.
-# https://github.com/rubygems/rubygems/pull/452
-Patch13:	rubygems-2.0.0-Do-not-modify-global-Specification.dirs-during-insta.patch
-# This prevents issues, when ruby configuration specifies --with-ruby-version=''.
-# https://github.com/rubygems/rubygems/pull/455
-Patch14:	rubygems-2.0.0-Fixes-for-empty-ruby-version.patch
-# Adds aarch64 support.
-# http://bugs.ruby-lang.org/issues/8331
-# https://bugzilla.redhat.com/show_bug.cgi?id=926463
-# Please note that this is the BZ patch, it might be good idea to update it
-# with its upstream version when available.
-Patch16:	ruby-2.0.0-p195-aarch64.patch
+Patch12: ruby-1.9.3-mkmf-verbose.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
-Patch17:	ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# Fixes issues with DESTDIR.
-# https://bugs.ruby-lang.org/issues/8115
-Patch18:	ruby-2.0.0-p247-Revert-mkmf.rb-prefix-install_dirs-only-with-DESTDIR.patch
-# == FEDORA PATCHES ENDS ==
-Patch20:	ruby-2.0.0-p451-Do-not-install-to-user-dir.patch
-Patch21:	ruby-2.0.0-p451-readline.patch
+Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+# https://www.ruby-lang.org/en/news/2014/03/10/regression-of-hash-reject-in-ruby-2-1-1/
+Patch18: ruby-2.1.2-p79-hash.c-extra-states.patch
+Patch19:	ruby-2.0.0-p451-readline.patch
+Patch20:	ruby-2.1.1-Do-not-install-to-user-dir.patch
 
 BuildRequires:	byacc
 BuildRequires:	doxygen
@@ -114,6 +103,7 @@ Perl).  It is simple, straight-forward, and extensible.
 
 %package	-n %{libname}
 Summary:	Libraries necessary to run Ruby
+
 Group:		Development/Ruby
 
 %description	-n %{libname}
@@ -121,6 +111,7 @@ This package includes the shared library for %{name}.
 
 %package	doc
 Summary:	Documentation for the powerful language Ruby
+
 Group:		Development/Ruby
 BuildArch:	noarch
 
@@ -129,6 +120,7 @@ This package contains the documentation for Ruby.
 
 %package -n	%{devname}
 Summary:	Development file for the powerful language Ruby
+
 Group:		Development/Ruby
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{libname} = %{version}-%{release}
@@ -140,6 +132,7 @@ This package contains the Ruby's devel files.
 %if %{with tcltk}
 %package	tk
 Summary:	Tk extension for the powerful language Ruby
+
 Group:		Development/Ruby
 Requires:	%{name} = %{version}
 
@@ -149,6 +142,7 @@ This package contains the Tk extension for Ruby.
 
 %package	RubyGems
 Summary:	The Ruby standard for packaging ruby libraries
+
 Group:		Development/Ruby
 Version:	%{rubygems_version}
 Requires:	ruby(abi) = %{subver}
@@ -162,9 +156,9 @@ BuildArch:	noarch
 RubyGems is the Ruby standard for publishing and managing third party
 libraries.
 
-%define rake_ver 0.9.6
 %package	rake
 Summary:	Simple ruby build program with capabilities similar to make
+
 Group:		Development/Ruby
 Version:	%{rake_ver}
 Requires:	ruby(abi) = %{subver}
@@ -174,9 +168,9 @@ BuildArch:	noarch
 Rake is a Make-like program implemented in Ruby. Tasks and dependencies are
 specified in standard Ruby syntax.
 
-%define minitest_ver 4.3.2
 %package	minitest
 Summary:	Minitest provides a complete suite of testing facilities
+
 Group:		Development/Ruby
 Version:	%{minitest_ver}
 License:	MIT
@@ -198,9 +192,9 @@ framework.
 minitest/pride shows pride in testing and adds coloring to your test
 output.
 
-%define json_ver 1.7.7
 %package	json
 Summary:	This is a JSON implementation as a Ruby extension in C
+
 Group:		Development/Ruby
 Version:	%{json_ver}
 License:	Ruby or GPLv2
@@ -213,9 +207,9 @@ You can think of it as a low fat alternative to XML, if you want to store
 data to disk or transmit it over a network rather than use a verbose
 markup language.
 
-%define rdoc_ver 4.0.0
 %package	rdoc
 Summary:	A tool to generate HTML and command-line documentation for Ruby projects
+
 Group:		Development/Ruby
 Version:	%{rdoc_ver}
 License:	GPLv2 and Ruby and MIT
@@ -233,6 +227,7 @@ documentation.
 
 %package	irb
 Summary:	The Interactive Ruby
+
 Group:		Development/Ruby
 Provides:	irb = %{version}-%{release}
 Provides:	ruby(irb) = %{version}-%{release}
@@ -243,9 +238,9 @@ BuildArch:	noarch
 The irb is acronym for Interactive Ruby.  It evaluates ruby expression
 from the terminal.
 
-%define bigdecimal_ver 1.2.0
 %package	bigdecimal
 Summary:	BigDecimal provides arbitrary-precision floating point decimal arithmetic
+
 Group:		Development/Ruby
 Version:	%{bigdecimal_ver}
 License:	GPL+ or Artistic
@@ -266,9 +261,9 @@ floating point arithmetic often introduces subtle errors because of the
 conversion between base 10 and base 2.
 
 
-%define io_console_ver 0.4.2
 %package	io-console
 Summary:	IO/Console is a simple console utilizing library
+
 Group:		Development/Ruby
 Version:	%{io_console_ver}
 Requires:	ruby(abi) = %{subver}
@@ -279,9 +274,9 @@ IO/Console provides very simple and portable access to console. It doesn't
 provide higher layer features, such like curses and readline.
 
 
-%define psych_ver 2.0.0
 %package psych
 Summary:	A libyaml wrapper for Ruby
+
 Version:	%{psych_ver}
 Group:		Development/Ruby
 Provides:	rubygem(psych)
@@ -296,9 +291,9 @@ libyaml[http://pyyaml.org/wiki/LibYAML] for its YAML parsing and emitting
 capabilities. In addition to wrapping libyaml, Psych also knows how to
 serialize and de-serialize most Ruby objects to and from the YAML format.
 
-%define test_unit_ver 2.0.0
 %package test-unit
-Summary:	test/unit compatible API testing framework
+Summary:	Test/unit compatible API testing framework
+
 Version:	%{psych_ver}
 Group:		Development/Ruby
 License:	MIT
@@ -308,7 +303,7 @@ Conflicts:	ruby < 2.0.0
 BuildArch:	noarch
 
 %prep
-%setup -qn ruby-%{rubyver}-%{patchversion}
+%setup -qn ruby-%{rubyver}
 %apply_patches
 # When patching mkmf.rb the mkmf.rb.0010 gets installed
 rm lib/mkmf.rb.0*
@@ -316,13 +311,14 @@ rm lib/mkmf.rb.0*
 autoconf
 
 %build
-CFLAGS=`echo %optflags | sed 's/-fomit-frame-pointer//'`
+CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//'`
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
 %configure2_5x \
 	--enable-shared \
 	--enable-pthread \
+	--with-archlibdir='%{_libdir}' \
 	--with-rubylibprefix='%{ruby_libdir}' \
         --with-rubyarchprefix='%{ruby_libarchdir}' \
 	--with-sitedir='%{ruby_sitelibdir}' \
@@ -431,7 +427,6 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %dir %{ruby_libarchdir}
 %{ruby_libarchdir}/continuation.so
 %{ruby_libarchdir}/coverage.so
-%{ruby_libarchdir}/curses.so
 %{ruby_libarchdir}/date_core.so
 %{ruby_libarchdir}/dbm.so
 %dir %{ruby_libarchdir}/digest
@@ -462,6 +457,8 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %dir %{ruby_libarchdir}/racc
 %{ruby_libarchdir}/racc/*.so
 %{ruby_libarchdir}/rbconfig.rb
+%{ruby_libarchdir}/rbconfig/sizeof.so
+%{ruby_libarchdir}/thread.so
 %{ruby_libarchdir}/readline.so
 %{ruby_libarchdir}/ripper.so
 %{ruby_libarchdir}/sdbm.so

@@ -1,0 +1,13 @@
+diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
+index 550cf59..451e495 100755
+--- a/tool/rbinstall.rb
++++ b/tool/rbinstall.rb
+@@ -722,7 +722,7 @@ end
+ install?(:ext, :comm, :gem) do
+   $:.unshift(File.join(srcdir, "lib"))
+   require("rubygems.rb")
+-  gem_dir = Gem.default_dir
++  gem_dir = Gem.default_dirs[:local][:gem_dir]
+   directories = Gem.ensure_gem_subdirectories(gem_dir, :mode => $dir_mode)
+   prepare "default gems", gem_dir, directories
+ 
