@@ -86,7 +86,8 @@ Provides:	/usr/bin/ruby
 Provides:	ruby(abi) = %subver
 %if !%{with bootstrap}
 BuildRequires:	ruby
-Requires:	rubygems >= %{rubygems_version}
+#Requires:	rubygems >= %{rubygems_version}
+Requires:	rubygems
 Requires:	rubygem(psych)
 Requires:	ruby(irb)
 Requires:	ruby(bigdecimal)
