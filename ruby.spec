@@ -29,8 +29,8 @@
 %define psych_ver 2.0.3
 %define test_unit_ver 2.0.0.2
 
-%bcond_without bootstrap
-%bcond_without gems
+%bcond_with bootstrap
+%bcond_with gems
 %bcond_with tcltk
 
 Summary:	Object Oriented Script Language
@@ -76,6 +76,7 @@ BuildRequires:	pkgconfig(ncurses)
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libffi)
+BuildRequires:	rubygems
 %if %{with tcltk}
 BuildRequires:	pkgconfig(tcl)
 BuildRequires:	pkgconfig(tk)
@@ -86,7 +87,6 @@ Provides:	/usr/bin/ruby
 Provides:	ruby(abi) = %subver
 %if !%{with bootstrap}
 BuildRequires:	ruby
-#Requires:	rubygems >= %{rubygems_version}
 Requires:	rubygems
 Requires:	rubygem(psych)
 Requires:	ruby(irb)
@@ -361,7 +361,7 @@ rm -f %{buildroot}%{_bindir}/{rake,rdoc,ri,testrb}
 rm -f %{buildroot}%{_mandir}/man1/{rake,ri}.*
 rm -fr %{buildroot}%{ruby_libdir}/{minitest,rake,rdoc,json,bigdecimal,io,test,psych}
 rm -fr %{buildroot}%{ruby_libarchdir}/{json,bigdecimal.so,io/console.so,psych.so}
-rm -fr %{buildroot}%{rubygems_dir}/{gems,specifications}
+rm -fr %{buildroot}%{_datadir}/gems/{gems,specifications}
 rm -f %{buildroot}%{_bindir}/gem
 rm -fr %{buildroot}%{rubygems_dir}/rbconfig
 rm -fr %{buildroot}%{rubygems_dir}/rubygems
