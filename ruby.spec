@@ -28,9 +28,13 @@
 %define io_console_ver 0.4.2
 %define psych_ver 2.0.3
 %define test_unit_ver 2.0.0.2
-
-%bcond_with bootstrap
-%bcond_with gems
+#howto properly update ruby from 2.x to 2.y (2.0 to 2.1)
+#1. enable bootstrap build
+#2. enable gems for bootstrap
+#3. disable bootstrap
+#3. disable gems
+%bcond_without bootstrap
+%bcond_without gems
 %bcond_with tcltk
 
 Summary:	Object Oriented Script Language
