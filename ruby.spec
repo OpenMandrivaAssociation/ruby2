@@ -318,24 +318,25 @@ CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-prote
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
-%configure2_5x \
+%configure \
 	--enable-shared \
-	--enable-pthread \
+    --enable-pthread \
 	--with-archlibdir='%{_libdir}' \
 	--with-rubylibprefix='%{ruby_libdir}' \
-        --with-rubyarchprefix='%{ruby_libarchdir}' \
+    --with-rubyarchprefix='%{ruby_libarchdir}' \
 	--with-sitedir='%{ruby_sitelibdir}' \
 	--with-sitearchdir='%{ruby_sitearchdir}' \
 	--with-vendordir='%{ruby_vendorlibdir}' \
 	--with-vendorarchdir='%{ruby_vendorarchdir}' \
 	--with-rubyhdrdir='%{_includedir}' \
-        --with-rubyarchhdrdir='$(archincludedir)' \
-        --with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
-        --with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
-        --with-rubygemsdir='%{rubygems_dir}' \
-        --with-ruby-pc='%{name}.pc' \
-        --enable-multiarch \
-        --with-ruby-version=''
+    --with-rubyarchhdrdir='$(archincludedir)' \
+    --with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
+    --with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
+    --with-rubygemsdir='%{rubygems_dir}' \
+    --with-ruby-pc='%{name}.pc' \
+    --enable-multiarch \
+    --with-ruby-version=''
+
 %make
 
 %install
