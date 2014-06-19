@@ -409,15 +409,17 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libdir}/cgi
 %{ruby_libdir}/date
 %{ruby_libdir}/digest
-%{ruby_libdir}/dl
+#% {ruby_libdir}/dl
 %{ruby_libdir}/drb
-%{ruby_libdir}/fiddle
+#% {ruby_libdir}/fiddle
 %{ruby_libdir}/matrix
 %{ruby_libdir}/net
 %{ruby_libdir}/openssl
 %{ruby_libdir}/optparse
 %{ruby_libdir}/racc
-%{ruby_libdir}/rbconfig
+%dir %{ruby_libdir}/rbconfig
+%dir %{ruby_libarchdir}/rbconfig
+%{ruby_libdir}/rbconfig/obsolete.rb
 %{ruby_libdir}/rexml
 %{ruby_libdir}/rinda
 %{ruby_libdir}/ripper
@@ -436,9 +438,9 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %dir %{ruby_libarchdir}/digest
 %{ruby_libarchdir}/digest.so
 %{ruby_libarchdir}/digest/*.so
-%dir %{ruby_libarchdir}/dl
-%{ruby_libarchdir}/dl.so
-%{ruby_libarchdir}/dl/*.so
+#% dir %{ruby_libarchdir}/dl
+# % {ruby_libarchdir}/dl.so
+# % {ruby_libarchdir}/dl/*.so
 %dir %{ruby_libarchdir}/enc
 %{ruby_libarchdir}/enc/*.so
 %dir %{ruby_libarchdir}/enc/trans
@@ -446,7 +448,7 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libarchdir}/etc.so
 %{ruby_libarchdir}/fcntl.so
 %{ruby_libarchdir}/fiber.so
-%{ruby_libarchdir}/fiddle.so
+#% {ruby_libarchdir}/fiddle.so
 %{ruby_libarchdir}/gdbm.so
 %dir %{ruby_libarchdir}/io
 %{ruby_libarchdir}/io/nonblock.so
