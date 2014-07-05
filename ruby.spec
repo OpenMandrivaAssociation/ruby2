@@ -41,7 +41,7 @@ Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	4
+Release:	5
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -150,6 +150,7 @@ Group:		Development/Ruby
 Version:	%{rubygems_version}
 Requires:	ruby(abi) = %{subver}
 Requires:	rdoc
+Requires:	ruby-json >= %{json_ver}
 Provides:	gem = %{rubygems_version}
 Provides:	rubygems = %{rubygems_version}
 Provides:	ruby(rubygems) = %{rubygems_version}
