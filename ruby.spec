@@ -317,7 +317,6 @@ autoconf
 %build
 CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-protector//'`
 %ifarch aarch64
-export CC=gcc
 export rb_cv_pri_prefix_long_long=ll
 %endif
 %configure \
