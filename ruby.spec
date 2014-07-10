@@ -41,7 +41,7 @@ Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	5
+Release:	6
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -56,6 +56,8 @@ Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-2.1.0-always-use-i386.patch
+# backport from upstream
+Patch4:		rubygems-2.2-docs.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
 Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
