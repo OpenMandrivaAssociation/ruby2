@@ -412,7 +412,7 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libdir}/cgi
 %{ruby_libdir}/date
 %{ruby_libdir}/digest
-#% {ruby_libdir}/dl
+%{ruby_libdir}/dl
 %{ruby_libdir}/drb
 #% {ruby_libdir}/fiddle
 %{ruby_libdir}/matrix
@@ -441,9 +441,9 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %dir %{ruby_libarchdir}/digest
 %{ruby_libarchdir}/digest.so
 %{ruby_libarchdir}/digest/*.so
-#% dir %{ruby_libarchdir}/dl
-# % {ruby_libarchdir}/dl.so
-# % {ruby_libarchdir}/dl/*.so
+%dir %{ruby_libarchdir}/dl
+%{ruby_libarchdir}/dl.so
+%{ruby_libarchdir}/dl/*.so
 %dir %{ruby_libarchdir}/enc
 %{ruby_libarchdir}/enc/*.so
 %dir %{ruby_libarchdir}/enc/trans
