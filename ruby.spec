@@ -1,4 +1,4 @@
-%define rubyver 2.1.2
+%define rubyver 2.1.3
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
 
 %define libname %mklibname ruby %{subver}
@@ -19,6 +19,7 @@
 # The RubyGems library has to stay out of Ruby directory three, since the
 # RubyGems should be share by all Ruby implementations.
 %define rubygems_dir %{_datadir}/ruby/gems
+%define gems_dir %{_datadir}/gems
 %define rubygems_version 2.2.2
 %define rake_ver 10.1.0
 %define minitest_ver 4.7.5
@@ -26,8 +27,7 @@
 %define rdoc_ver 4.1.0
 %define bigdecimal_ver 1.2.4
 %define io_console_ver 0.4.2
-%define psych_ver 2.0.3
-%define test_unit_ver 2.0.0.2
+%define psych_ver 2.0.5
 #howto properly update ruby from 2.x to 2.y (2.0 to 2.1)
 #1. enable bootstrap build
 #2. enable gems for bootstrap
@@ -41,11 +41,11 @@ Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	7
+Release:	8
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
-Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}.tar.bz2
+Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}.tar.gz
 Source1:	operating_system.rb
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
@@ -91,7 +91,7 @@ BuildRequires:	pkgconfig(tk)
 # explicit file provides (since such requires are automatically added by find-requires)
 Provides:	/usr/bin/ruby
 Provides:	ruby(abi) = %subver
-%if !%{with bootstrap}
+%if %{without bootstrap}
 BuildRequires:	ruby
 Requires:	rubygems
 Requires:	rubygem(psych)
@@ -285,7 +285,6 @@ Summary:	A libyaml wrapper for Ruby
 
 Version:	%{psych_ver}
 Group:		Development/Ruby
-Provides:	rubygem(psych)
 License:	MIT
 Requires:	ruby(abi) = %{subver}
 Requires:	ruby(rubygems) >= %{rubygems_version}
@@ -300,7 +299,7 @@ serialize and de-serialize most Ruby objects to and from the YAML format.
 %package test-unit
 Summary:	Test/unit compatible API testing framework
 
-Version:	%{psych_ver}
+Version:	%{rubyver}
 Group:		Development/Ruby
 License:	MIT
 Requires:	ruby(abi) = %{subver}
@@ -360,12 +359,7 @@ mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
 cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
 
 # drop gems if not wanted, so that we could split them out as seperated source rpm
-%if %{with gems}
-# Something broken or missing in configure
-mv %{buildroot}%{_datadir}/gems/gems/* %{buildroot}%{rubygems_dir}/
-rmdir %{buildroot}%{_datadir}/gems/gems/
-mv %{buildroot}%{_datadir}/gems/* %{buildroot}%{rubygems_dir}/
-%else
+%if %{without gems}
 rm -f %{buildroot}%{_bindir}/{rake,rdoc,ri,testrb}
 rm -f %{buildroot}%{_mandir}/man1/{rake,ri}.*
 rm -fr %{buildroot}%{ruby_libdir}/{minitest,rake,rdoc,json,bigdecimal,io,test,psych}
@@ -414,7 +408,7 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libdir}/digest
 %{ruby_libdir}/dl
 %{ruby_libdir}/drb
-#% {ruby_libdir}/fiddle
+%{ruby_libdir}/fiddle
 %{ruby_libdir}/matrix
 %{ruby_libdir}/net
 %{ruby_libdir}/openssl
@@ -451,7 +445,7 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libarchdir}/etc.so
 %{ruby_libarchdir}/fcntl.so
 %{ruby_libarchdir}/fiber.so
-#% {ruby_libarchdir}/fiddle.so
+%{ruby_libarchdir}/fiddle.so
 %{ruby_libarchdir}/gdbm.so
 %dir %{ruby_libarchdir}/io
 %{ruby_libarchdir}/io/nonblock.so
@@ -536,6 +530,10 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %files RubyGems
 %{_bindir}/gem
 %dir %{rubygems_dir}
+%dir %{gems_dir}
+%dir %{gems_dir}/gems
+%dir %{gems_dir}/specifications
+%dir %{gems_dir}/specifications/default
 %{rubygems_dir}/rbconfig
 %{rubygems_dir}/rubygems
 %{rubygems_dir}/rubygems.rb
@@ -543,21 +541,21 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 
 %files minitest
 %{ruby_libdir}/minitest
-%{rubygems_dir}/specifications/default/minitest-*.gemspec
+%{gems_dir}/specifications/default/minitest-*.gemspec
 
 %files rake
 %{_bindir}/rake
 %{_mandir}/man1/rake.1.*
 %{ruby_libdir}/rake
-%{rubygems_dir}/rake-*
-%{rubygems_dir}/specifications/default/rake-*.gemspec
+%{gems_dir}/gems/rake-*
+%{gems_dir}/specifications/default/rake-*.gemspec
 
 %files rdoc
 %{_bindir}/rdoc
 %{_bindir}/ri
 %{ruby_libdir}/rdoc
-%{rubygems_dir}/rdoc-*
-%{rubygems_dir}/specifications/default/rdoc-*.gemspec
+%{gems_dir}/gems/rdoc-*
+%{gems_dir}/specifications/default/rdoc-*.gemspec
 %{_mandir}/man1/ri.1.*
 
 %files json
@@ -565,26 +563,26 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %dir %{ruby_libarchdir}/json/ext
 %{ruby_libarchdir}/json/ext/*.so
 %{ruby_libdir}/json
-%{rubygems_dir}/specifications/default/json-*.gemspec
+%{gems_dir}/specifications/default/json-*.gemspec
 
 %files bigdecimal
 %{ruby_libdir}/bigdecimal
 %{ruby_libarchdir}/bigdecimal.so
-%{rubygems_dir}/specifications/default/bigdecimal-*.gemspec
+%{gems_dir}/specifications/default/bigdecimal-*.gemspec
 
 %files io-console
 %{ruby_libdir}/io
 %{ruby_libarchdir}/io/console.so
-%{rubygems_dir}/specifications/default/io-console-*.gemspec
+%{gems_dir}/specifications/default/io-console-*.gemspec
 
 %files psych
 %{ruby_libdir}/psych
 %{ruby_libarchdir}/psych.so
-%{rubygems_dir}/specifications/default/psych-*.gemspec
+%{gems_dir}/specifications/default/psych-*.gemspec
 
 %files test-unit
 %{_bindir}/testrb
 %{ruby_libdir}/test
-%{rubygems_dir}/test-unit-*
-%{rubygems_dir}/specifications/default/test-unit-*.gemspec
+%{gems_dir}/gems/test-unit-*
+%{gems_dir}/specifications/default/test-unit-*.gemspec
 %endif
