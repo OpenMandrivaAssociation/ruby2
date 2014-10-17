@@ -317,6 +317,14 @@ autoconf
 
 %build
 CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-protector//'`
+%ifarch %armx
+# use gcc instead of clang
+# main reason is ld + clang generates warning
+# "missing .note.GNU-stack section implies executable stack"
+# in checking LDFLAGS stage and lead to fail
+export CC=gcc
+export CXX=g++
+%endif
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
