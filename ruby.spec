@@ -25,7 +25,7 @@
 %define minitest_ver 4.7.5
 %define json_ver 1.8.1
 %define rdoc_ver 4.1.0
-%define bigdecimal_ver 1.2.4
+%define bigdecimal_ver 1.2.5
 %define io_console_ver 0.4.2
 %define psych_ver 2.0.5
 #howto properly update ruby from 2.x to 2.y (2.0 to 2.1)
@@ -34,7 +34,7 @@
 #3. disable bootstrap
 #3. disable gems
 %bcond_with bootstrap
-%bcond_without gems
+%bcond_with gems
 %bcond_with tcltk
 
 Summary:	Object Oriented Script Language
