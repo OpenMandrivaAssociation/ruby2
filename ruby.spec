@@ -33,15 +33,15 @@
 #2. enable gems for bootstrap
 #3. disable bootstrap
 #3. disable gems
-%bcond_without bootstrap
-%bcond_with gems
+%bcond_with bootstrap
+%bcond_without gems
 %bcond_with tcltk
 
 Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	3
+Release:	4
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
