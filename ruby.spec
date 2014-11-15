@@ -1,4 +1,4 @@
-%define rubyver 2.1.4
+%define rubyver 2.1.5
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
 
 %define libname %mklibname ruby %{subver}
