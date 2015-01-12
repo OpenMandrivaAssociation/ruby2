@@ -95,6 +95,7 @@ Provides:	/usr/bin/ruby
 Provides:	ruby(abi) = %subver
 %if %{without bootstrap}
 BuildRequires:	ruby
+BuildRequires:	rubygems
 Requires:	rubygems
 Requires:	ruby(psych)
 Requires:	ruby(irb)
