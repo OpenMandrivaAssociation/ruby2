@@ -1,4 +1,6 @@
-%define rubyver 2.1.5
+%define _disable_ld_no_undefined 1
+
+%define rubyver 2.2.0
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
 
 %define libname %mklibname ruby %{subver}
@@ -20,20 +22,22 @@
 # RubyGems should be share by all Ruby implementations.
 %define rubygems_dir %{_datadir}/ruby/gems
 %define gems_dir %{_datadir}/gems
-%define rubygems_version 2.2.2
-%define rake_ver 10.1.0
-%define minitest_ver 4.7.5
+%define rubygems_version 2.4.5
+%define rake_ver 10.4.2
+%define minitest_ver 5.4.3
 %define json_ver 1.8.1
-%define rdoc_ver 4.1.0
-%define bigdecimal_ver 1.2.5
-%define io_console_ver 0.4.2
-%define psych_ver 2.0.5
+%define rdoc_ver 4.2.0
+%define bigdecimal_ver 1.2.6
+%define io_console_ver 0.4.3
+%define psych_ver 2.0.8
+%define test_unit_ver 3.0.8
+%define power_assert_ver 0.2.2
 #howto properly update ruby from 2.x to 2.y (2.0 to 2.1)
 #1. enable bootstrap build
 #2. enable gems for bootstrap
 #3. disable bootstrap
 #3. disable gems
-%bcond_with bootstrap
+%bcond_without bootstrap
 %bcond_without gems
 %bcond_with tcltk
 
@@ -56,8 +60,6 @@ Patch1: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
 Patch3: ruby-2.1.0-always-use-i386.patch
-# backport from upstream
-Patch4:		rubygems-2.2-docs.patch
 # Fixes random WEBRick test failures.
 # https://bugs.ruby-lang.org/issues/6573.
 Patch5: ruby-1.9.3.p195-fix-webrick-tests.patch
@@ -68,9 +70,10 @@ Patch8: ruby-2.1.0-custom-rubygems-location.patch
 Patch12: ruby-1.9.3-mkmf-verbose.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
-# http://bugs.ruby-lang.org/issues/8566
-Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-Patch20:	ruby-2.1.1-Do-not-install-to-user-dir.patch
+# http://bugs.ruby-lang.org/issues/8566A
+# cb - changed in 2.2 and we dont seem to use it
+#Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+Patch20:	ruby-2.2.0-Do-not-install-to-user-dir.patch
 
 BuildRequires:	byacc
 BuildRequires:	doxygen
@@ -82,7 +85,6 @@ BuildRequires:	pkgconfig(ncurses)
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libffi)
-BuildRequires:	rubygems
 %if %{with tcltk}
 BuildRequires:	pkgconfig(tcl)
 BuildRequires:	pkgconfig(tk)
@@ -94,7 +96,7 @@ Provides:	ruby(abi) = %subver
 %if %{without bootstrap}
 BuildRequires:	ruby
 Requires:	rubygems
-Requires:	rubygem(psych)
+Requires:	ruby(psych)
 Requires:	ruby(irb)
 Requires:	ruby(bigdecimal)
 %endif
@@ -288,6 +290,7 @@ Group:		Development/Ruby
 License:	MIT
 Requires:	ruby(abi) = %{subver}
 Requires:	ruby(rubygems) >= %{rubygems_version}
+Provides:	ruby(psych)
 Conflicts:	ruby < 2.0.0
 
 %description	psych
@@ -297,15 +300,26 @@ capabilities. In addition to wrapping libyaml, Psych also knows how to
 serialize and de-serialize most Ruby objects to and from the YAML format.
 
 %package test-unit
-Summary:	Test/unit compatible API testing framework
+Summary:       Test/unit compatible API testing framework
 
-Version:	%{rubyver}
-Group:		Development/Ruby
-License:	MIT
-Requires:	ruby(abi) = %{subver}
-Requires:	ruby(rubygems) >= %{rubygems_version}
-Conflicts:	ruby < 2.0.0
-BuildArch:	noarch
+Version:       %{test_unit_ver}
+Group:         Development/Ruby
+License:       MIT
+Requires:      ruby(abi) = %{subver}
+Requires:      ruby(rubygems) >= %{rubygems_version}
+Conflicts:     ruby < 2.0.0
+BuildArch:     noarch
+
+%package power_assert
+Summary:       Power Assert for Ruby
+
+Version:       %{power_assert_ver}
+Group:         Development/Ruby
+License:       MIT
+Requires:      ruby(abi) = %{subver}
+Requires:      ruby(rubygems) >= %{rubygems_version}
+Conflicts:     ruby < 2.0.0
+BuildArch:     noarch
 
 %prep
 %setup -qn ruby-%{rubyver}
@@ -317,14 +331,12 @@ autoconf
 
 %build
 CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-protector//'`
-%ifarch %armx
 # use gcc instead of clang
 # main reason is ld + clang generates warning
 # "missing .note.GNU-stack section implies executable stack"
 # in checking LDFLAGS stage and lead to fail
 export CC=gcc
 export CXX=g++
-%endif
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
@@ -344,12 +356,17 @@ export rb_cv_pri_prefix_long_long=ll
 	--with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
 	--with-rubygemsdir='%{rubygems_dir}' \
 	--with-ruby-pc='%{name}.pc' \
+%if %{without tcltk}
+        --with-out-ext=tcl --with-out-ext=tk \
+%endif
 	--enable-multiarch \
 	--with-ruby-version=''
 
 %make
 
 %install
+mkdir -p lib/rubygems/defaults
+cp %{SOURCE1} lib/rubygems/defaults
 %makeinstall_std install-doc
 
 install -d %{buildroot}%{_datadir}/emacs/site-lisp
@@ -378,6 +395,9 @@ rm -fr %{buildroot}%{rubygems_dir}/rbconfig
 rm -fr %{buildroot}%{rubygems_dir}/rubygems
 rm -f %{buildroot}%{rubygems_dir}/rubygems.rb
 rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
+%else
+rm -fr  %{buildroot}%{gems_dir}/cache
+find %{buildroot}%{gems_dir} -type d -exec chmod 755 {} \;
 %endif
 
 #% check
@@ -412,9 +432,7 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %exclude %{ruby_libdir}/tkwinpkg.rb
 %endif
 %{ruby_libdir}/cgi
-%{ruby_libdir}/date
 %{ruby_libdir}/digest
-%{ruby_libdir}/dl
 %{ruby_libdir}/drb
 %{ruby_libdir}/fiddle
 %{ruby_libdir}/matrix
@@ -424,13 +442,13 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libdir}/racc
 %dir %{ruby_libdir}/rbconfig
 %dir %{ruby_libarchdir}/rbconfig
-%{ruby_libdir}/rbconfig/obsolete.rb
 %{ruby_libdir}/rexml
 %{ruby_libdir}/rinda
 %{ruby_libdir}/ripper
 %{ruby_libdir}/rss
 %{ruby_libdir}/shell
 %{ruby_libdir}/syslog
+%{ruby_libdir}/unicode_normalize
 %{ruby_libdir}/uri
 %{ruby_libdir}/webrick
 %{ruby_libdir}/xmlrpc
@@ -443,9 +461,6 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %dir %{ruby_libarchdir}/digest
 %{ruby_libarchdir}/digest.so
 %{ruby_libarchdir}/digest/*.so
-%dir %{ruby_libarchdir}/dl
-%{ruby_libarchdir}/dl.so
-%{ruby_libarchdir}/dl/*.so
 %dir %{ruby_libarchdir}/enc
 %{ruby_libarchdir}/enc/*.so
 %dir %{ruby_libarchdir}/enc/trans
@@ -548,8 +563,8 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{rubygems_dir}/ubygems.rb
 
 %files minitest
-%{ruby_libdir}/minitest
-%{gems_dir}/specifications/default/minitest-*.gemspec
+%{gems_dir}/gems/minitest-*
+%{gems_dir}/specifications/minitest-*.gemspec
 
 %files rake
 %{_bindir}/rake
@@ -557,6 +572,14 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libdir}/rake
 %{gems_dir}/gems/rake-*
 %{gems_dir}/specifications/default/rake-*.gemspec
+
+%files test-unit
+%{gems_dir}/gems/test-unit-*
+%{gems_dir}/specifications/test-unit-*.gemspec
+
+%files power_assert
+%{gems_dir}/gems/power_assert-*
+%{gems_dir}/specifications/power_assert-*.gemspec
 
 %files rdoc
 %{_bindir}/rdoc
@@ -588,9 +611,4 @@ rm -f %{buildroot}%{rubygems_dir}/ubygems.rb
 %{ruby_libarchdir}/psych.so
 %{gems_dir}/specifications/default/psych-*.gemspec
 
-%files test-unit
-%{_bindir}/testrb
-%{ruby_libdir}/test
-%{gems_dir}/gems/test-unit-*
-%{gems_dir}/specifications/default/test-unit-*.gemspec
 %endif

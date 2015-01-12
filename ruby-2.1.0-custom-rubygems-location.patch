@@ -7,7 +7,7 @@ Subject: [PATCH] Allow to install RubyGems into custom location, outside of
 ---
  configure.in          | 5 +++++
  loadpath.c            | 4 ++++
- template/verconf.h.in | 3 +++
+ template/verconf.h.tmpl | 3 +++
  tool/rbinstall.rb     | 9 +++++++++
  4 files changed, 21 insertions(+)
 
@@ -49,10 +49,10 @@ index 623dc9d..74c5d9e 100644
      RUBY_LIB "\0"
  #ifdef RUBY_THINARCH
      RUBY_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
-diff --git a/template/verconf.h.in b/template/verconf.h.in
+diff --git a/template/verconf.h.tmpl b/template/verconf.h.tmpl
 index 79c003e..34f2382 100644
---- a/template/verconf.h.in
-+++ b/template/verconf.h.in
+--- a/template/verconf.h.tmpl
++++ b/template/verconf.h.tmpl
 @@ -34,6 +34,9 @@
  % if C["RUBY_SEARCH_PATH"]
  #define RUBY_SEARCH_PATH		"${RUBY_SEARCH_PATH}"
@@ -90,7 +90,7 @@ index b47b6e1..0b99408 100755
 +  end
  end
  
- install?(:local, :arch, :lib) do
+ install?(:local, :comm, :hdr, :'comm-hdr') do
 -- 
 1.8.3.1
 

@@ -17,9 +17,9 @@ index 94beb44..db4dfe9 100644
  
 +require_relative 'ruby/envutil'
 +
- src_testdir = File.dirname(File.realpath(__FILE__))
- $LOAD_PATH << src_testdir
  module Gem
+ end
+ class Gem::TestCase < MiniTest::Unit::TestCase
 -- 
 1.8.3.1
 
