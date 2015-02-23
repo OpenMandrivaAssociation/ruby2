@@ -45,7 +45,7 @@ Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	6
+Release:	7
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -336,8 +336,8 @@ CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-prote
 # main reason is ld + clang generates warning
 # "missing .note.GNU-stack section implies executable stack"
 # in checking LDFLAGS stage and lead to fail
-export CC=gcc
-export CXX=g++
+#export CC=gcc
+#export CXX=g++
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
