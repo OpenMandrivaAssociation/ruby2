@@ -45,7 +45,7 @@ Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	7
+Release:	8
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -338,7 +338,7 @@ CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-prote
 # in checking LDFLAGS stage and lead to fail
 # (tpg) force clang
 export CC=clang
-export CXX=clang
+export CXX=clang++
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
