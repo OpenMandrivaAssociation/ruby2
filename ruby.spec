@@ -336,8 +336,9 @@ CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-prote
 # main reason is ld + clang generates warning
 # "missing .note.GNU-stack section implies executable stack"
 # in checking LDFLAGS stage and lead to fail
-#export CC=gcc
-#export CXX=g++
+# (tpg) force clang
+export CC=clang
+export CXX=clang
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
@@ -363,7 +364,7 @@ export rb_cv_pri_prefix_long_long=ll
 	--enable-multiarch \
 	--with-ruby-version=''
 
-%make
+%make CC=%{__cc} %{__cxx}
 
 %install
 mkdir -p lib/rubygems/defaults
