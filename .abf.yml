@@ -1,4 +1,2 @@
-removed_sources:
-  ruby-2.1.5.tar.gz: 9c0a238bd7839a4b51871641945a3da90997b8c2
 sources:
-  ruby-2.2.0.tar.gz: 680302104b24f850fddfe93ee37396de01765b37
+  ruby-2.2.2.tar.gz: 29c51a17639d921b1ae51cd80a9d7584f67d5e1c

@@ -1,6 +1,6 @@
 %define _disable_ld_no_undefined 1
 
-%define rubyver 2.2.0
+%define rubyver 2.2.2
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
 
 %define libname %mklibname ruby %{subver}

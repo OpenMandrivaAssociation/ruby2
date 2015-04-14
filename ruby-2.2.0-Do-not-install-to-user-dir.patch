@@ -1,6 +1,6 @@
---- ruby-2.2.0/tool/rbinstall.rb.orig	2015-01-12 12:18:11.012704719 +0000
-+++ ruby-2.2.0/tool/rbinstall.rb	2015-01-12 13:01:20.077472474 +0000
-@@ -656,7 +656,7 @@
+--- ruby-2.2.2/tool/rbinstall.rb.0020~	2015-04-14 23:30:30.880329441 +0200
++++ ruby-2.2.2/tool/rbinstall.rb	2015-04-14 23:33:35.598793835 +0200
+@@ -665,7 +665,7 @@ end
  install?(:ext, :comm, :gem) do
    $:.unshift(File.join(srcdir, "lib"))
    require("rubygems.rb")
@@ -9,17 +9,17 @@
    directories = Gem.ensure_gem_subdirectories(gem_dir, :mode => $dir_mode)
    prepare "default gems", gem_dir, directories
  
-@@ -710,11 +710,11 @@
- 
- install?(:ext, :comm, :gem) do
-   require 'pathname'
--  gem_dir = Gem.default_dir
-+  gem_dir = Gem.default_dirs[:local][:gem_dir]
-   directories = Gem.ensure_gem_subdirectories(gem_dir, :mode => $dir_mode)
-   prepare "bundle gems", gem_dir, directories
-   Dir.glob(srcdir+'/gems/*.gem').each do |gem|
--    Gem.install gem, Gem::Requirement.default, :install_dir => with_destdir(Gem.dir), :domain => :local, :ignore_dependencies => true
-+    Gem.install gem, Gem::Requirement.default, :install_dir => with_destdir(gem_dir), :domain => :local, :ignore_dependencies => true
-     gemname = Pathname(gem).basename
-     puts "#{" "*30}#{gemname}"
+@@ -724,11 +724,11 @@ install?(:ext, :comm, :gem) do
    end
+   if defined?(Zlib)
+     require 'pathname'
+-    gem_dir = Gem.default_dir
++    gem_dir = Gem.default_dirs[:local][:gem_dir]
+     directories = Gem.ensure_gem_subdirectories(gem_dir, :mode => $dir_mode)
+     prepare "bundle gems", gem_dir, directories
+     Dir.glob(srcdir+'/gems/*.gem').each do |gem|
+-      Gem.install gem, Gem::Requirement.default, :install_dir => with_destdir(Gem.dir), :domain => :local, :ignore_dependencies => true
++      Gem.install gem, Gem::Requirement.default, :install_dir => with_destdir(gem_dir), :domain => :local, :ignore_dependencies => true
+       gemname = Pathname(gem).basename
+       puts "#{" "*30}#{gemname}"
+     end
