@@ -358,6 +358,7 @@ export rb_cv_pri_prefix_long_long=ll
 	--with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
 	--with-rubygemsdir='%{rubygems_dir}' \
 	--with-ruby-pc='%{name}.pc' \
+	--with-setjmp-type=setjmp \
 %if %{without tcltk}
         --with-out-ext=tcl --with-out-ext=tk \
 %endif
