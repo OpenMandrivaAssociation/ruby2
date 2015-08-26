@@ -1,6 +1,6 @@
 %define _disable_ld_no_undefined 1
 
-%define rubyver 2.2.2
+%define rubyver 2.2.3
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
 
 %define libname %mklibname ruby %{subver}
@@ -45,7 +45,7 @@ Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	9
+Release:	1
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -329,6 +329,10 @@ BuildArch:     noarch
 rm lib/mkmf.rb.0*
 
 autoconf
+# Fix a hardcoded lib path in configure script
+sed -i -e "s:\(RUBY_LIB_PREFIX=\"\${prefix}/\)lib:\1%{_libdir}:" \
+	configure.in
+autoreconf -fiv
 
 %build
 CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-protector//'`
@@ -365,7 +369,7 @@ export rb_cv_pri_prefix_long_long=ll
 	--enable-multiarch \
 	--with-ruby-version=''
 
-%make CC=%{__cc} %{__cxx}
+%make CC=%{__cc} %{__cxx} EXTLDFLAGS="%{ldflags}"
 
 %install
 mkdir -p lib/rubygems/defaults
