@@ -75,6 +75,7 @@ Patch12: ruby-1.9.3-mkmf-verbose.patch
 #Patch17: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 Patch20:	ruby-2.2.0-Do-not-install-to-user-dir.patch
 Patch21:	ruby-2.2.3-linking.patch
+Patch22:	configure-ldflags-warnings-error.patch
 
 BuildRequires:	byacc
 BuildRequires:	doxygen
