@@ -1,0 +1,2 @@
+addFilter("E: library-not-linked-against-libc")
+

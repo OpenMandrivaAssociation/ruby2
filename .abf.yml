@@ -1,2 +1,4 @@
-sources:
+removed_sources:
   ruby-2.2.3.tar.gz: 0d9e158534cb31e72740138b8f697b57b448e5c3
+sources:
+  ruby-2.2.4.tar.gz: 818e5e157f76d4912ba3a7c7b4fc5156105e83c3

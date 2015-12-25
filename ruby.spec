@@ -1,6 +1,6 @@
 %define _disable_ld_no_undefined 1
 
-%define rubyver 2.2.3
+%define rubyver 2.2.4
 %define subver %(echo %{rubyver}|cut -d. -f1,2)
 
 %define libname %mklibname ruby %{subver}
@@ -51,6 +51,7 @@ Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
 Source0:	http://ftp.ruby-lang.org/pub/ruby/%{subver}/ruby-%{rubyver}.tar.gz
 Source1:	operating_system.rb
+Source100:	ruby.rpmlintrc
 # http://bugs.ruby-lang.org/issues/7807
 Patch0: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # Allows to override libruby.so placement. Hopefully we will be able to return
