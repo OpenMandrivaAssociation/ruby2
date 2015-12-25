@@ -45,7 +45,7 @@ Summary:	Object Oriented Script Language
 
 Name:		ruby
 Version:	%{rubyver}
-Release:	3
+Release:	4
 License:	Ruby or BSD
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -372,7 +372,7 @@ export rb_cv_pri_prefix_long_long=ll
 	--enable-multiarch \
 	--with-ruby-version=''
 
-%make CC=%{__cc} %{__cxx} EXTLDFLAGS="%{ldflags}"
+%make CC=%{__cc} CXX=%{__cxx} EXTLDFLAGS="%{ldflags}"
 
 %install
 mkdir -p lib/rubygems/defaults
