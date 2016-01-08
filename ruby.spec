@@ -340,13 +340,20 @@ autoreconf -fiv
 
 %build
 CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-protector//'`
+
+%if %arm
 # use gcc instead of clang
 # main reason is ld + clang generates warning
 # "missing .note.GNU-stack section implies executable stack"
 # in checking LDFLAGS stage and lead to fail
+export CC=gcc
+export CXX=g++
+%else
 # (tpg) force clang
 export CC=clang
 export CXX=clang++
+%endif
+
 %ifarch aarch64
 export rb_cv_pri_prefix_long_long=ll
 %endif
@@ -373,7 +380,7 @@ export rb_cv_pri_prefix_long_long=ll
 	--enable-multiarch \
 	--with-ruby-version=''
 
-%make CC=%{__cc} CXX=%{__cxx} EXTLDFLAGS="%{ldflags}"
+%make CC=$CC CXX=$CXX EXTLDFLAGS="%{ldflags}"
 
 %install
 mkdir -p lib/rubygems/defaults
