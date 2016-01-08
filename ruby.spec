@@ -341,7 +341,7 @@ autoreconf -fiv
 %build
 CFLAGS=`echo %{optflags} | sed 's/-fomit-frame-pointer//' | sed 's/-fstack-protector//'`
 
-%if %arm
+%ifarch %arm
 # use gcc instead of clang
 # main reason is ld + clang generates warning
 # "missing .note.GNU-stack section implies executable stack"
