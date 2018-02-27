@@ -5,76 +5,30 @@ Subject: [PATCH] Prevent duplicated paths when empty version string is
  configured.
 
 ---
- configure.in     | 15 +++++++++------
+ configure.ac     |  3 ++-
  loadpath.c       | 12 ++++++++++++
  tool/mkconfig.rb |  2 +-
- 3 files changed, 22 insertions(+), 7 deletions(-)
+ 3 files changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/configure.in b/configure.in
-index 17ed3ed..5843651 100644
---- a/configure.in
-+++ b/configure.in
-@@ -3645,8 +3645,6 @@ AS_CASE(["$target_os"],
-     rubyw_install_name='$(RUBYW_INSTALL_NAME)'
-     ])
+diff --git a/configure.ac b/configure.ac
+index 999e2d6d5d..11fc237552 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -4250,7 +4250,8 @@ AS_CASE(["$ruby_version_dir_name"],
+ ruby_version_dir=/'${ruby_version_dir_name}'
  
--rubylibdir='${rubylibprefix}/${ruby_version}'
--rubyarchdir=${multiarch+'${rubyarchprefix}/${ruby_version}'}${multiarch-'${rubylibdir}/${arch}'}
- 
- rubyarchprefix=${multiarch+'${archlibdir}/${RUBY_BASE_NAME}'}${multiarch-'${rubylibprefix}/${arch}'}
- AC_ARG_WITH(rubyarchprefix,
-@@ -3676,6 +3674,7 @@ AC_ARG_WITH(ruby-version,
-             [ruby_version=full])
- unset RUBY_LIB_VERSION
- unset RUBY_LIB_VERSION_STYLE
-+ruby_version_suffix=/'${ruby_version}'
- AS_CASE(["$ruby_version"],
-   [full],  [RUBY_LIB_VERSION_STYLE='3	/* full */'],
-   [minor], [RUBY_LIB_VERSION_STYLE='2	/* minor */'])
-@@ -3692,30 +3691,34 @@ if test ${RUBY_LIB_VERSION_STYLE+set}; then
-     ruby_version="`$CPP -I. -I"${srcdir}" -I"${srcdir}/include" conftest.c | sed '/^ruby_version=/!d;s/ //g'`"
-     eval $ruby_version
- elif test -z "${ruby_version}"; then
+ if test -z "${ruby_version_dir_name}"; then
 -    AC_MSG_ERROR([No ruby version, No place for bundled libraries])
-+    unset ruby_version_suffix
++    unset ruby_version_dir
 +    AC_DEFINE(RUBY_LIB_VERSION_BLANK, 1)
- else
-     RUBY_LIB_VERSION="${ruby_version}"
  fi
- AC_SUBST(RUBY_LIB_VERSION_STYLE)
- AC_SUBST(RUBY_LIB_VERSION)
  
-+rubylibdir='${rubylibprefix}'${ruby_version_suffix}
-+rubyarchdir=${multiarch+'${rubyarchprefix}'${ruby_version_suffix}}${multiarch-'${rubylibdir}/${arch}'}
-+
- AC_ARG_WITH(sitedir,
- 	    AS_HELP_STRING([--with-sitedir=DIR], [site libraries in DIR [[RUBY_LIB_PREFIX/site_ruby]], "no" to disable site directory]),
-             [sitedir=$withval],
-             [sitedir='${rubylibprefix}/site_ruby'])
--sitelibdir='${sitedir}/${ruby_version}'
-+sitelibdir='${sitedir}'${ruby_version_suffix}
- 
- AC_ARG_WITH(sitearchdir,
- 	    AS_HELP_STRING([--with-sitearchdir=DIR],
- 			   [architecture dependent site libraries in DIR [[SITEDIR/SITEARCH]], "no" to disable site directory]),
-             [sitearchdir=$withval],
--            [sitearchdir=${multiarch+'${rubysitearchprefix}/site_ruby/${ruby_version}'}${multiarch-'${sitelibdir}/${sitearch}'}])
-+            [sitearchdir=${multiarch+'${rubysitearchprefix}/site_ruby'${ruby_version_suffix}}${multiarch-'${sitelibdir}/${sitearch}'}])
- 
- AC_ARG_WITH(vendordir,
- 	    AS_HELP_STRING([--with-vendordir=DIR], [vendor libraries in DIR [[RUBY_LIB_PREFIX/vendor_ruby]], "no" to disable vendor directory]),
-             [vendordir=$withval],
-             [vendordir='${rubylibprefix}/vendor_ruby'])
--vendorlibdir='${vendordir}/${ruby_version}'
-+vendorlibdir='${vendordir}'${ruby_version_suffix}
- 
- AC_ARG_WITH(vendorarchdir,
- 	    AS_HELP_STRING([--with-vendorarchdir=DIR],
+ rubylibdir='${rubylibprefix}'${ruby_version_dir}
 diff --git a/loadpath.c b/loadpath.c
 index 9160031..0d4d953 100644
 --- a/loadpath.c
 +++ b/loadpath.c
-@@ -65,22 +65,34 @@ const char ruby_initial_load_paths[] =
+@@ -65,21 +65,33 @@ const char ruby_initial_load_paths[] =
      RUBY_SEARCH_PATH "\0"
  #endif
  #ifndef NO_RUBY_SITE_LIB
@@ -104,16 +58,15 @@ index 9160031..0d4d953 100644
      RUBY_VENDOR_ARCH_LIB_FOR(RUBY_SITEARCH) "\0"
 +#ifndef RUBY_LIB_VERSION_BLANK
      RUBY_VENDOR_LIB "\0"
- #endif
 +#endif
+ #endif
  
      RUBY_LIB "\0"
- #ifdef RUBY_THINARCH
 diff --git a/tool/mkconfig.rb b/tool/mkconfig.rb
 index 07076d4..35e6c3c 100755
 --- a/tool/mkconfig.rb
 +++ b/tool/mkconfig.rb
-@@ -121,7 +121,7 @@ File.foreach "config.status" do |line|
+@@ -111,7 +111,7 @@
      val = val.gsub(/\$(?:\$|\{?(\w+)\}?)/) {$1 ? "$(#{$1})" : $&}.dump
      case name
      when /^prefix$/
