@@ -62,7 +62,7 @@
 %bcond_without rubypick
 %endif
 
-%bcond_without systemtap
+%bcond_with systemtap
 %bcond_without git
 %bcond_without cmake
 %bcond_without gmp
@@ -153,9 +153,9 @@ Recommends: rubygem(openssl) >= %{openssl_version}
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
 %{?with_gmp:BuildRequires: gmp-devel}
-BuildRequires: libffi-devel
+BuildRequires: pkgconfig(libffi)
 BuildRequires: openssl-devel
-BuildRequires: libyaml-devel
+BuildRequires: yaml-devel
 BuildRequires: readline-devel
 # Needed to pass test_set_program_name(TestRubyOptions)
 BuildRequires: procps
@@ -165,8 +165,6 @@ BuildRequires: procps
 %{?with_cmake:BuildRequires: %{_bindir}/cmake}
 # Required to test hardening.
 %{?with_hardening_test:BuildRequires: %{_bindir}/checksec}
-BuildRequires: multilib-rpm-config
-BuildRequires: gcc
 
 # This package provides %%{_bindir}/ruby-mri therefore it is marked by this
 # virtual provide. It can be installed as dependency of rubypick.
