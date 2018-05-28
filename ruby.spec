@@ -536,7 +536,6 @@ cp -a %{SOURCE3} .
 cp -a %{SOURCE6} .
 
 %build
-%setup_compile_flags
 autoconf
 
 %configure \
