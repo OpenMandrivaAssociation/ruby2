@@ -562,7 +562,7 @@ autoconf
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
-%make_build V=1 COPY="cp -p" Q=
+%make_build CFLAGS="%{optflags}" V=1 COPY="cp -p" Q=
 
 %install
 rm -rf %{buildroot}
