@@ -1,15 +1,16 @@
-%ruby_version		%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["ruby_version"]')
+%ruby_libdir %{_datadir}/%{name}
+%ruby_libarchdir %{_libdir}/%{name}
 
-%ruby_archdir		%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["archdir"]')
-%ruby_libdir		%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
-%ruby_sitedir		%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["sitedir"]')
-%ruby_sitearchdir	%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["sitearchdir"]')
-%ruby_sitelibdir	%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["sitelibdir"]')
-%ruby_vendordir		%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["vendordir"]')
-%ruby_vendorarchdir	%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["vendorarchdir"]')
-%ruby_vendorlibdir	%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["vendorlibdir"]')
-%ruby_gemdir		%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["rubygemsdir"]')
-%ruby_ridir		%(%{__ruby} -rrbconfig -e 'print RbConfig::CONFIG["ridir"])')
+# This is the local lib/arch and should not be used for packaging.
+%ruby_sitedir site_ruby
+%ruby_sitelibdir %{_prefix}/local/share/%{name}/%{ruby_sitedir}
+%ruby_sitearchdir %{_prefix}/local/%{_lib}/%{name}/%{ruby_sitedir}
+
+# This is the general location for libs/archs compatible with all
+# or most of the Ruby versions available in the Fedora repositories.
+%ruby_vendordir vendor_ruby
+%ruby_vendorlibdir %{ruby_libdir}/%{ruby_vendordir}
+%ruby_vendorarchdir %{ruby_libarchdir}/%{ruby_vendordir}
 
 # For ruby packages we want to filter out any provides caused by private
 # libs in %%{ruby_vendorarchdir}/%%{ruby_sitearchdir}.

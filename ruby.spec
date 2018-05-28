@@ -1,6 +1,6 @@
 %global major_version 2
 %global minor_version 5
-%global teeny_version 0
+%global teeny_version 1
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -21,7 +21,7 @@
 %endif
 
 
-%global release 1
+%global release 93
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -83,76 +83,65 @@ Group: Development/Languages
 License: (Ruby or BSD) and Public Domain and MIT and CC0 and zlib and UCD
 URL: http://ruby-lang.org/
 Source0: ftp://ftp.ruby-lang.org/pub/%{name}/%{major_minor_version}/%{ruby_archive}.tar.xz
-Source1: https://src.fedoraproject.org/rpms/ruby/raw/master/f/operating_system.rb
+Source1: operating_system.rb
 # TODO: Try to push SystemTap support upstream.
-Source2: https://src.fedoraproject.org/rpms/ruby/raw/master/f/libruby.stp
-Source3: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-exercise.stp
-# These files are *NOT* the same as in Fedora.
-# Do *NOT* blindly overwrite them when pulling in
-# new patches from there.
+Source2: libruby.stp
+Source3: ruby-exercise.stp
 Source4: macros.ruby
 Source5: macros.rubygems
-Source6: https://src.fedoraproject.org/rpms/ruby/raw/master/f/abrt_prelude.rb
+Source6: abrt_prelude.rb
 # RPM dependency generators.
-Source8: https://src.fedoraproject.org/rpms/ruby/raw/master/f/rubygems.attr
-Source9: https://src.fedoraproject.org/rpms/ruby/raw/master/f/rubygems.req
-Source10: https://src.fedoraproject.org/rpms/ruby/raw/master/f/rubygems.prov
-Source11: https://src.fedoraproject.org/rpms/ruby/raw/master/f/rubygems.con
+Source8: rubygems.attr
+Source9: rubygems.req
+Source10: rubygems.prov
+Source11: rubygems.con
 # ABRT hoook test case.
-Source13: https://src.fedoraproject.org/rpms/ruby/raw/master/f/test_abrt.rb
+Source13: test_abrt.rb
 # SystemTap tests.
-Source14: https://src.fedoraproject.org/rpms/ruby/raw/master/f/test_systemtap.rb
+Source14: test_systemtap.rb
 
-# Define the macros here given we can't rely on them pre-existing
-%define ruby_libdir %{_datadir}/%{name}
-%define ruby_libarchdir %{_libdir}/%{name}
-%define gem_dir %{_datadir}/gems
-%define gem_archdir %{_libdir}/gems
+# The load directive is supported since RPM 4.12, i.e. F21+. The build process
+# fails on older Fedoras.
+%{?load:%{SOURCE4}}
+%{?load:%{SOURCE5}}
 
 # Fix ruby_version abuse.
 # https://bugs.ruby-lang.org/issues/11002
-Patch0: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.3.0-ruby_version.patch
+Patch0: ruby-2.3.0-ruby_version.patch
 # http://bugs.ruby-lang.org/issues/7807
-Patch1: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
+Patch1: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # Allows to override libruby.so placement. Hopefully we will be able to return
 # to plain --with-rubyarchprefix.
 # http://bugs.ruby-lang.org/issues/8973
-Patch2: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.1.0-Enable-configuration-of-archlibdir.patch
+Patch2: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 # Force multiarch directories for i.86 to be always named i386. This solves
 # some differencies in build between Fedora and RHEL.
-Patch3: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.1.0-always-use-i386.patch
+Patch3: ruby-2.1.0-always-use-i386.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://bugs.ruby-lang.org/issues/5617
-Patch4: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.1.0-custom-rubygems-location.patch
+Patch4: ruby-2.1.0-custom-rubygems-location.patch
 # Make mkmf verbose by default
-Patch5: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-1.9.3-mkmf-verbose.patch
+Patch5: ruby-1.9.3-mkmf-verbose.patch
 # Adds support for '--with-prelude' configuration option. This allows to built
 # in support for ABRT.
 # http://bugs.ruby-lang.org/issues/8566
-Patch6: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
+Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
 # Use miniruby to regenerate prelude.c.
 # https://bugs.ruby-lang.org/issues/10554
-Patch7: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.2.3-Generate-preludes-using-miniruby.patch
+Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
 # Workaround "an invalid stdio handle" error on PPC, due to recently introduced
 # hardening features of glibc (rhbz#1361037).
 # https://bugs.ruby-lang.org/issues/12666
-Patch9: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch
+Patch9: ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch
 # Add Gem.operating_system_defaults to allow packagers to override defaults.
 # https://github.com/rubygems/rubygems/pull/2116
-Patch10: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.5.0-Add-Gem.operating_system_defaults.patch
-# Fix segfault during generating documentation.
-# https://bugs.ruby-lang.org/issues/14343
-Patch11: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.5.0-parse.y-assignable_error.patch
-# Recent tzdata change breaks Ruby test suite.
-# https://bugs.ruby-lang.org/issues/14438
-Patch12: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.5.0-Disable-Tokyo-TZ-tests.patch
-# Fix thread_safe tests suite segfaults.
-# https://bugs.ruby-lang.org/issues/14357
-Patch13: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.5.0-st.c-retry-operations-if-rebuilt.patch
-# Fix: Multiple vulnerabilities in RubyGems
-# https://bugzilla.redhat.com/show_bug.cgi?id=1547431
-# https://www.ruby-lang.org/en/news/2018/02/17/multiple-vulnerabilities-in-rubygems/
-Patch14: https://src.fedoraproject.org/rpms/ruby/raw/master/f/rubygems-2.5.0-multiple-vulnerabilities.patch
+Patch10: ruby-2.5.0-Add-Gem.operating_system_defaults.patch
+# TestTimeTZ test failures Kiritimati and Lisbon
+# https://bugs.ruby-lang.org/issues/14655
+Patch11: ruby-2.5.1-TestTimeTZ-test-failures-Kiritimati-and-Lisbon.patch
+# Don't force libraries used to build Ruby to its dependencies.
+# https://bugs.ruby-lang.org/issues/14422
+Patch15: ruby-2.6.0-library-options-to-MAINLIBS.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Suggests: rubypick
@@ -163,10 +152,10 @@ Recommends: rubygem(openssl) >= %{openssl_version}
 
 BuildRequires: autoconf
 BuildRequires: gdbm-devel
-%{?with_hardening_test:BuildRequires: gmp-devel}
-BuildRequires: ffi-devel
+%{?with_gmp:BuildRequires: gmp-devel}
+BuildRequires: libffi-devel
 BuildRequires: openssl-devel
-BuildRequires: yaml-devel
+BuildRequires: libyaml-devel
 BuildRequires: readline-devel
 # Needed to pass test_set_program_name(TestRubyOptions)
 BuildRequires: procps
@@ -176,6 +165,7 @@ BuildRequires: procps
 %{?with_cmake:BuildRequires: %{_bindir}/cmake}
 # Required to test hardening.
 %{?with_hardening_test:BuildRequires: %{_bindir}/checksec}
+BuildRequires: multilib-rpm-config
 BuildRequires: gcc
 
 # This package provides %%{_bindir}/ruby-mri therefore it is marked by this
@@ -302,8 +292,6 @@ Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Requires:   ruby(irb) = %{irb_version}
 Requires:   rubygem(io-console) >= %{io_console_version}
-# Hardcode the dependency to keep it compatible with dependencies of the
-# official rubygem-rdoc gem.
 Requires:   rubygem(json) >= %{json_version}
 Provides:   rdoc = %{version}-%{release}
 Provides:   ri = %{version}-%{release}
@@ -537,9 +525,7 @@ rm -rf ext/fiddle/libffi*
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p0
+%patch15 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -572,9 +558,6 @@ autoconf
         --with-ruby-version='' \
         --enable-multiarch \
         --with-prelude=./abrt_prelude.rb \
-%ifarch aarch64
-	--with-setjmp-type=setjmp \
-%endif
 
 # Q= makes the build output more verbose and allows to check Fedora
 # compiler options.
@@ -583,6 +566,10 @@ make %{?_smp_mflags} COPY="cp -p" Q=
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
+
+# Rename ruby/config.h to ruby/config-<arch>.h to avoid file conflicts on
+# multilib systems and install config.h wrapper
+%multilib_fix_c_header --file %{_includedir}/%{name}/config.h
 
 # Rename the ruby executable. It is replaced by RubyPick.
 %{?with_rubypick:mv %{buildroot}%{_bindir}/%{name}{,-mri}}
@@ -717,8 +704,6 @@ echo 'doc/pty' >> .ruby-doc.ja
 sed -i 's/^/%doc /' .ruby-doc.*
 sed -i 's/^/%lang(ja) /' .ruby-doc.ja
 
-# FIXME should enable this once tests stop failing
-%if 0
 %check
 %if 0%{?with_hardening_test}
 # Check Ruby hardening.
@@ -753,9 +738,11 @@ make runruby TESTRUN_SCRIPT="--enable-gems %{SOURCE13}"
 
 DISABLE_TESTS=""
 
-# https://bugs.ruby-lang.org/issues/11480
-# Once seen: http://koji.fedoraproject.org/koji/taskinfo?taskID=12556650
-DISABLE_TESTS="$DISABLE_TESTS -x test_fork.rb"
+# SIGSEV handler does not provide correct output on AArch64.
+# https://bugs.ruby-lang.org/issues/13758
+%ifarch aarch64
+DISABLE_TESTS="$DISABLE_TESTS -n !/test_segv_\(setproctitle\|test\|loaded_features\)/"
+%endif
 
 # Disable failing TestResolvMDNS#test_mdns_each_address test,
 # which fails on Koji.
@@ -763,7 +750,6 @@ DISABLE_TESTS="$DISABLE_TESTS -x test_fork.rb"
 sed -i '/def test_mdns_each_address$/,/^  end$/ s/^/#/' test/resolv/test_mdns.rb
 
 make check TESTS="-v $DISABLE_TESTS"
-%endif
 
 %files
 %license BSDL
