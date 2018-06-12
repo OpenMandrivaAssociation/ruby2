@@ -543,6 +543,15 @@ cp -a %{SOURCE6} .
 %build
 autoconf
 
+%ifarch %{ix86} %{arm}
+# Build failure with clang:
+# On x86_32:
+# /usr/bin/ld: error: /tmp/lto-llvm-827b03.o: relocation R_386_GOTOFF against preemptible symbol ruby_xmalloc cannot be used when making a shared object
+# On armv7hnl:
+# /tmp/lto-llvm-f1ff70.o:ld-temp.o:function timetick2integer: error: undefined reference to '__mulodi4'
+export CC="gcc -fuse-ld=bfd"
+export CXX="g++ -fuse-ld=bfd"
+%endif
 %configure \
         --with-rubylibprefix='%{ruby_libdir}' \
         --with-archlibdir='%{_libdir}' \
