@@ -6,6 +6,8 @@
 %global ruby_version %{major_minor_version}.%{teeny_version}
 %global ruby_release %{ruby_version}
 
+%global _disable_ld_no_undefined 1
+
 # Specify the named version. It has precedense to revision.
 #%%global milestone rc1
 
@@ -21,7 +23,7 @@
 %endif
 
 
-%global release 93
+%global release 1
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -58,10 +60,6 @@
 
 %global _normalized_cpu %(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
 
-%if 0%{?fedora} >= 19
-%bcond_without rubypick
-%endif
-
 %bcond_with systemtap
 %bcond_without git
 %bcond_without cmake
@@ -70,6 +68,11 @@
 %if 0%{?fedora}
 %bcond_without hardening_test
 %endif
+
+%define libname %mklibname ruby %(echo %{ruby_version} |cut -d. -f1-2)
+%define devname %mklibname -d ruby
+
+%bcond_with tests
 
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
@@ -99,6 +102,7 @@ Source11: rubygems.con
 Source13: test_abrt.rb
 # SystemTap tests.
 Source14: test_systemtap.rb
+Provides: %{_bindir}/ruby
 
 # The load directive is supported since RPM 4.12, i.e. F21+. The build process
 # fails on older Fedoras.
@@ -142,10 +146,13 @@ Patch11: ruby-2.5.1-TestTimeTZ-test-failures-Kiritimati-and-Lisbon.patch
 # Don't force libraries used to build Ruby to its dependencies.
 # https://bugs.ruby-lang.org/issues/14422
 Patch15: ruby-2.6.0-library-options-to-MAINLIBS.patch
-Patch16: 005_no_undefined.patch
+# Use -Wl,--no-undefined (needs Patch 17)
+# Patch16: 005_no_undefined.patch
+# Fix linkage with --no-undefined
+# not yet ready
+#Patch17: ruby-2.5.1-linkage.patch
 
-Requires: %{name}-libs%{?_isa} = %{version}-%{release}
-Suggests: rubypick
+Requires: %{libname} = %{EVRD}
 Recommends: ruby(rubygems) >= %{rubygems_version}
 Recommends: rubygem(bigdecimal) >= %{bigdecimal_version}
 Recommends: rubygem(did_you_mean) >= %{did_you_mean_version}
@@ -158,6 +165,7 @@ BuildRequires: pkgconfig(libffi)
 BuildRequires: openssl-devel
 BuildRequires: yaml-devel
 BuildRequires: readline-devel
+BuildRequires: pkgconfig(zlib)
 # Needed to pass test_set_program_name(TestRubyOptions)
 BuildRequires: procps
 %{?with_systemtap:BuildRequires: %{_bindir}/dtrace}
@@ -178,23 +186,27 @@ files and to do system management tasks (as in Perl).  It is simple,
 straight-forward, and extensible.
 
 
-%package devel
+%package -n %{devname}
 Summary:    A Ruby development environment
 Group:      Development/Languages
 Requires:   %{name}%{?_isa} = %{version}-%{release}
 # This would not be needed if ~50 packages depending on -devel used
 # --disable-gems
 Requires:   rubygems
+Provides:   ruby-devel = %{EVRD}
 
-%description devel
+%description -n %{devname}
 Header files and libraries for building an extension library for the
 Ruby or an application embedding Ruby.
 
-%package libs
+%package -n %{libname}
 Summary:    Libraries necessary to run Ruby
 Group:      Development/Libraries
 License:    Ruby or BSD
 Provides:   ruby(release) = %{ruby_release}
+# For compatibility with Fedora packages
+Provides:   ruby-libs = %{EVRD}
+Provides:   ruby-libs%{?_isa} = %{EVRD}
 
 # Virtual provides for CCAN copylibs.
 # https://fedorahosted.org/fpc/ticket/364
@@ -210,7 +222,7 @@ Provides: bundled(ccan-list)
 Obsoletes: ruby-tcltk < 2.4.0
 
 
-%description libs
+%description -n %{libname}
 This package includes the libruby, necessary to run Ruby.
 
 
@@ -230,6 +242,7 @@ Provides:   ruby(rubygems) = %{version}-%{release}
 # https://github.com/rubygems/rubygems/pull/1189#issuecomment-121600910
 Provides:   bundled(rubygem-molinillo) = %{molinillo_version}
 BuildArch:  noarch
+%rename ruby-RubyGems
 
 %description -n rubygems
 RubyGems is the Ruby standard for publishing and managing third party
@@ -261,6 +274,7 @@ Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rake = %{version}-%{release}
 Provides:   rubygem(rake) = %{version}-%{release}
 BuildArch:  noarch
+%rename ruby-rake
 
 %description -n rubygem-rake
 Rake is a Make-like program implemented in Ruby. Tasks and dependencies are
@@ -271,7 +285,7 @@ specified in standard Ruby syntax.
 Summary:    The Interactive Ruby
 Version:    %{irb_version}
 Group:      Development/Libraries
-Requires:   %{name}-libs = %{ruby_version}
+Requires:   %{libname} = %{ruby_version}
 Provides:   irb = %{version}-%{release}
 Provides:   ruby(irb) = %{version}-%{release}
 BuildArch:  noarch
@@ -295,6 +309,8 @@ Requires:   rubygem(json) >= %{json_version}
 Provides:   rdoc = %{version}-%{release}
 Provides:   ri = %{version}-%{release}
 Provides:   rubygem(rdoc) = %{version}-%{release}
+Provides:   %{_bindir}/ri
+%rename ruby-rdoc
 BuildArch:  noarch
 
 %description -n rubygem-rdoc
@@ -321,6 +337,7 @@ License:    Ruby or BSD
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(bigdecimal) = %{version}-%{release}
+%rename ruby-bigdecimal
 
 %description -n rubygem-bigdecimal
 Ruby provides built-in support for arbitrary precision integer arithmetic.
@@ -372,6 +389,7 @@ License:    (Ruby or GPLv2) and UCD
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(json) = %{version}-%{release}
+%rename ruby-json
 
 %description -n rubygem-json
 This is a implementation of the JSON specification according to RFC 4627.
@@ -443,6 +461,7 @@ License:    MIT
 Requires:   ruby(release)
 Requires:   ruby(rubygems) >= %{rubygems_version}
 Provides:   rubygem(psych) = %{version}-%{release}
+%rename ruby-psych
 
 %description -n rubygem-psych
 Psych is a YAML parser and emitter. Psych leverages
@@ -507,25 +526,11 @@ HTTP.
 
 
 %prep
-%setup -q -n %{ruby_archive}
+%autosetup -p1 -n %{ruby_archive}
 
 # Remove bundled libraries to be sure they are not used.
 rm -rf ext/psych/yaml
 rm -rf ext/fiddle/libffi*
-
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch15 -p1
-%patch16 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -566,13 +571,6 @@ autoconf
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
-
-# Rename ruby/config.h to ruby/config-<arch>.h to avoid file conflicts on
-# multilib systems and install config.h wrapper
-%multilib_fix_c_header --file %{_includedir}/%{name}/config.h
-
-# Rename the ruby executable. It is replaced by RubyPick.
-%{?with_rubypick:mv %{buildroot}%{_bindir}/%{name}{,-mri}}
 
 # Version is empty if --with-ruby-version is specified.
 # http://bugs.ruby-lang.org/issues/7807
@@ -705,6 +703,7 @@ sed -i 's/^/%doc /' .ruby-doc.*
 sed -i 's/^/%lang(ja) /' .ruby-doc.ja
 
 %check
+%if %{with tests}
 %if 0%{?with_hardening_test}
 # Check Ruby hardening.
 checksec -f libruby.so.%{ruby_version} | \
@@ -736,8 +735,6 @@ make runruby TESTRUN_SCRIPT="--enable-gems %{SOURCE13}"
 # Check if systemtap is supported.
 %{?with_systemtap:make runruby TESTRUN_SCRIPT=%{SOURCE14}}
 
-DISABLE_TESTS=""
-
 # SIGSEV handler does not provide correct output on AArch64.
 # https://bugs.ruby-lang.org/issues/13758
 %ifarch aarch64
@@ -750,6 +747,7 @@ DISABLE_TESTS="$DISABLE_TESTS -n !/test_segv_\(setproctitle\|test\|loaded_featur
 sed -i '/def test_mdns_each_address$/,/^  end$/ s/^/#/' test/resolv/test_mdns.rb
 
 make check TESTS="-v $DISABLE_TESTS"
+%endif
 
 %files
 %license BSDL
@@ -758,11 +756,11 @@ make check TESTS="-v $DISABLE_TESTS"
 %license GPL
 %license LEGAL
 %{_bindir}/erb
-%{_bindir}/%{name}%{?with_rubypick:-mri}
+%{_bindir}/%{name}
 %{_mandir}/man1/erb*
 %{_mandir}/man1/ruby*
 
-%files devel
+%files -n %{devname}
 %license BSDL
 %license COPYING
 %lang(ja) %license COPYING.ja
@@ -775,7 +773,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{_libdir}/libruby.so
 %{_libdir}/pkgconfig/%{name}.pc
 
-%files libs
+%files -n %{libname}
 %license COPYING
 %lang(ja) %license COPYING.ja
 %license GPL
@@ -921,7 +919,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/syslog.so
 %{ruby_libarchdir}/zlib.so
 
-%{tapset_root}
+%{tapset_dir}/*.stp
 
 %files -n rubygems
 %{_bindir}/gem
