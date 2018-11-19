@@ -552,6 +552,11 @@ autoconf
 export CC="gcc -fuse-ld=bfd"
 export CXX="g++ -fuse-ld=bfd"
 %endif
+
+%ifarch znver1
+%global optflags %optflags -fPIC
+%endif
+
 %configure \
         --with-rubylibprefix='%{ruby_libdir}' \
         --with-archlibdir='%{_libdir}' \
