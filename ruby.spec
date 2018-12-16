@@ -23,7 +23,7 @@
 %endif
 
 
-%global release 1
+%global release 2
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -285,7 +285,9 @@ specified in standard Ruby syntax.
 Summary:    The Interactive Ruby
 Version:    %{irb_version}
 Group:      Development/Libraries
-Requires:   %{libname} = %{ruby_version}
+# Must require the virtual package rather than
+# %{libname} because the latter isn't noarch friendly
+Requires:   ruby-libs = %{ruby_version}
 Provides:   irb = %{version}-%{release}
 Provides:   ruby(irb) = %{version}-%{release}
 BuildArch:  noarch
