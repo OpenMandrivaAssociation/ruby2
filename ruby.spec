@@ -1,6 +1,8 @@
+%global optflags %{optflags} -fPIC
+
 %global major_version 2
-%global minor_version 5
-%global teeny_version 1
+%global minor_version 7
+%global teeny_version 0
 %global major_minor_version %{major_version}.%{minor_version}
 
 %global ruby_version %{major_minor_version}.%{teeny_version}
@@ -23,7 +25,7 @@
 %endif
 
 
-%global release 2
+%global release 1
 %{!?release_string:%global release_string %{?development_release:0.}%{release}%{?development_release:.%{development_release}}%{?dist}}
 
 # The RubyGems library has to stay out of Ruby directory three, since the
@@ -31,25 +33,30 @@
 %global rubygems_dir %{_datadir}/rubygems
 
 # Bundled libraries versions
-%global rubygems_version 2.7.6
+%global rubygems_version 3.1.2
 %global molinillo_version 0.5.7
 
-# TODO: The IRB has strange versioning. Keep the Ruby's versioning ATM.
-# http://redmine.ruby-lang.org/issues/5313
-%global irb_version %{ruby_version}
+%global bundler_version 2.1.2
+%global bundler_connection_pool_version 2.2.2
+%global bundler_fileutils_version 1.3.0
+%global bundler_molinillo_version 0.6.6
+%global bundler_net_http_persistent_version 3.1.0
+%global bundler_thor_version 1.0.0
 
-%global bigdecimal_version 1.3.4
-%global did_you_mean_version 1.2.0
-%global io_console_version 0.4.6
-%global json_version 2.1.0
-%global minitest_version 5.10.3
-%global net_telnet_version 0.1.1
-%global openssl_version 2.1.0
-%global power_assert_version 1.1.1
-%global psych_version 3.0.2
-%global rake_version 12.3.0
-%global rdoc_version 6.0.1
-%global test_unit_version 3.2.7
+%global bigdecimal_version 2.0.0
+%global did_you_mean_version 1.4.0
+%global io_console_version 0.5.3
+%global irb_version 1.2.1
+%global json_version 2.3.0
+%global minitest_version 5.13.0
+%global net_telnet_version 0.2.0
+%global openssl_version 2.1.2
+%global power_assert_version 1.1.5
+%global psych_version 3.1.0
+%global racc_version 1.4.16
+%global rake_version 13.0.1
+%global rdoc_version 6.2.1
+%global test_unit_version 3.3.4
 %global xmlrpc_version 0.3.0
 
 # Might not be needed in the future, if we are lucky enough.
@@ -111,7 +118,7 @@ Provides: %{_bindir}/ruby
 
 # Fix ruby_version abuse.
 # https://bugs.ruby-lang.org/issues/11002
-Patch0: ruby-2.3.0-ruby_version.patch
+Patch0: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.3.0-ruby_version.patch
 # http://bugs.ruby-lang.org/issues/7807
 Patch1: ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch
 # Allows to override libruby.so placement. Hopefully we will be able to return
@@ -123,29 +130,13 @@ Patch2: ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 Patch3: ruby-2.1.0-always-use-i386.patch
 # Allows to install RubyGems into custom directory, outside of Ruby's tree.
 # http://bugs.ruby-lang.org/issues/5617
-Patch4: ruby-2.1.0-custom-rubygems-location.patch
+Patch4: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.1.0-custom-rubygems-location.patch
 # Make mkmf verbose by default
 Patch5: ruby-1.9.3-mkmf-verbose.patch
-# Adds support for '--with-prelude' configuration option. This allows to built
-# in support for ABRT.
-# http://bugs.ruby-lang.org/issues/8566
-Patch6: ruby-2.1.0-Allow-to-specify-additional-preludes-by-configuratio.patch
-# Use miniruby to regenerate prelude.c.
-# https://bugs.ruby-lang.org/issues/10554
-Patch7: ruby-2.2.3-Generate-preludes-using-miniruby.patch
 # Workaround "an invalid stdio handle" error on PPC, due to recently introduced
 # hardening features of glibc (rhbz#1361037).
 # https://bugs.ruby-lang.org/issues/12666
-Patch9: ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch
-# Add Gem.operating_system_defaults to allow packagers to override defaults.
-# https://github.com/rubygems/rubygems/pull/2116
-Patch10: ruby-2.5.0-Add-Gem.operating_system_defaults.patch
-# TestTimeTZ test failures Kiritimati and Lisbon
-# https://bugs.ruby-lang.org/issues/14655
-Patch11: ruby-2.5.1-TestTimeTZ-test-failures-Kiritimati-and-Lisbon.patch
-# Don't force libraries used to build Ruby to its dependencies.
-# https://bugs.ruby-lang.org/issues/14422
-Patch15: ruby-2.6.0-library-options-to-MAINLIBS.patch
+Patch9: https://src.fedoraproject.org/rpms/ruby/raw/master/f/ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch
 # Use -Wl,--no-undefined (needs Patch 17)
 # Patch16: 005_no_undefined.patch
 # Fix linkage with --no-undefined
@@ -233,6 +224,7 @@ Version:    %{rubygems_version}
 Group:      Development/Libraries
 License:    Ruby or MIT
 Requires:   ruby(release)
+Recommends: rubygem(bundler) >= %{bundler_version}
 Recommends: rubygem(rdoc) >= %{rdoc_version}
 Recommends: rubygem(io-console) >= %{io_console_version}
 Requires:   rubygem(openssl) >= %{openssl_version}
@@ -526,6 +518,38 @@ BuildArch:  noarch
 XMLRPC is a lightweight protocol that enables remote procedure calls over
 HTTP.
 
+%package -n rubygem-bundler
+Summary:    Library and utilities to manage a Ruby application's gem dependencies
+Version:    %{bundler_version}
+License:    MIT
+Requires:   ruby(release)
+Requires:   ruby(rubygems) >= %{rubygems_version}
+Requires:   rubygem(io-console)
+Provides:   rubygem(bundler) = %{version}-%{release}
+# https://github.com/bundler/bundler/issues/3647
+Provides:   bundled(connection_pool) = %{bundler_connection_pool_version}
+Provides:   bundled(rubygem-fileutils) = %{bundler_fileutils_version}
+Provides:   bundled(rubygem-molinillo) = %{bundler_molinillo_version}
+Provides:   bundled(rubygem-net-http-persisntent) = %{bundler_net_http_persistent_version}
+Provides:   bundled(rubygem-thor) = %{bundler_thor_version}
+BuildArch:  noarch
+ 
+%description -n rubygem-bundler
+Bundler manages an application's dependencies through its entire life, across
+many machines, systematically and repeatably.
+ 
+ 
+%package -n rubygem-racc
+Summary:    Racc is a LALR(1) parser generator
+Version:    %{racc_version}
+License:    MIT
+Requires:   ruby(release)
+Requires:   ruby(rubygems) >= %{rubygems_version}
+Provides:   rubygem(racc) = %{version}-%{release}
+ 
+%description -n rubygem-racc
+Racc is a LALR(1) parser generator. It is written in Ruby itself, and
+generates Ruby program.
 
 %prep
 %autosetup -p1 -n %{ruby_archive}
@@ -544,16 +568,6 @@ cp -a %{SOURCE6} .
 
 %build
 autoconf
-
-%ifarch %{ix86} %{arm}
-# Build failure with clang:
-# On x86_32:
-# /usr/bin/ld: error: /tmp/lto-llvm-827b03.o: relocation R_386_GOTOFF against preemptible symbol ruby_xmalloc cannot be used when making a shared object
-# On armv7hnl:
-# /tmp/lto-llvm-f1ff70.o:ld-temp.o:function timetick2integer: error: undefined reference to '__mulodi4'
-export CC="gcc -fuse-ld=bfd"
-export CXX="g++ -fuse-ld=bfd"
-%endif
 
 %ifarch znver1
 %global optflags %optflags -fPIC
@@ -622,9 +636,6 @@ install -m 755 %{SOURCE11} %{buildroot}%{_rpmconfigdir}
 # Install custom operating_system.rb.
 mkdir -p %{buildroot}%{rubygems_dir}/rubygems/defaults
 cp %{SOURCE1} %{buildroot}%{rubygems_dir}/rubygems/defaults
-
-# Move gems root into common direcotry, out of Ruby directory structure.
-mv %{buildroot}%{ruby_libdir}/gems %{buildroot}%{gem_dir}
 
 # Create folders for gem binary extensions.
 # TODO: These folders should go into rubygem-filesystem but how to achieve it,
@@ -811,6 +822,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{ruby_libdir}/json.rb
 %exclude %{ruby_libdir}/openssl.rb
 %exclude %{ruby_libdir}/psych.rb
+%{ruby_libdir}/benchmark
 %{ruby_libdir}/cgi
 %{ruby_libdir}/digest
 %{ruby_libdir}/drb
@@ -825,7 +837,6 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libdir}/rinda
 %{ruby_libdir}/ripper
 %{ruby_libdir}/rss
-%{ruby_libdir}/shell
 %{ruby_libdir}/syslog
 %{ruby_libdir}/unicode_normalize
 %{ruby_libdir}/uri
@@ -850,6 +861,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/digest/sha2.so
 %dir %{ruby_libarchdir}/enc
 %{ruby_libarchdir}/enc/big5.so
+%{ruby_libarchdir}/enc/cesu_8.so
 %{ruby_libarchdir}/enc/cp949.so
 %{ruby_libarchdir}/enc/emacs_mule.so
 %{ruby_libarchdir}/enc/encdb.so
@@ -879,6 +891,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %{ruby_libarchdir}/enc/shift_jis.so
 %dir %{ruby_libarchdir}/enc/trans
 %{ruby_libarchdir}/enc/trans/big5.so
+%{ruby_libarchdir}/enc/trans/cesu_8.so
 %{ruby_libarchdir}/enc/trans/chinese.so
 %{ruby_libarchdir}/enc/trans/ebcdic.so
 %{ruby_libarchdir}/enc/trans/emoji.so
@@ -917,6 +930,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %dir %{ruby_libarchdir}/io
 %{ruby_libarchdir}/io/nonblock.so
 %{ruby_libarchdir}/io/wait.so
+%{ruby_libarchdir}/monitor.so
 %{ruby_libarchdir}/nkf.so
 %{ruby_libarchdir}/objspace.so
 %{ruby_libarchdir}/pathname.so
@@ -959,22 +973,59 @@ make check TESTS="-v $DISABLE_TESTS"
 %exclude %{gem_dir}/cache/*
 
 # TODO: Gemify these libraries
-%{gem_dir}/specifications/default/cmath-1.0.0.gemspec
-%{gem_dir}/specifications/default/csv-1.0.0.gemspec
-%{gem_dir}/specifications/default/date-1.0.0.gemspec
-%{gem_dir}/specifications/default/dbm-1.0.0.gemspec
-%{gem_dir}/specifications/default/etc-1.0.0.gemspec
+%{gem_dir}/specifications/default/benchmark-0.1.0.gemspec
+%{gem_dir}/specifications/default/cgi-0.1.0.gemspec
+%{gem_dir}/specifications/default/csv-3.1.2.gemspec
+%{gem_dir}/specifications/default/date-3.0.0.gemspec
+%{gem_dir}/specifications/default/dbm-1.1.0.gemspec
+%{gem_dir}/specifications/default/delegate-0.1.0.gemspec
+%{gem_dir}/specifications/default/etc-1.1.0.gemspec
 %{gem_dir}/specifications/default/fcntl-1.0.0.gemspec
 %{gem_dir}/specifications/default/fiddle-1.0.0.gemspec
-%{gem_dir}/specifications/default/fileutils-1.0.2.gemspec
-%{gem_dir}/specifications/default/gdbm-2.0.0.gemspec
-%{gem_dir}/specifications/default/ipaddr-1.2.0.gemspec
-%{gem_dir}/specifications/default/scanf-1.0.0.gemspec
+%{gem_dir}/specifications/default/fileutils-1.4.1.gemspec
+%{gem_dir}/specifications/default/forwardable-1.3.1.gemspec
+%{gem_dir}/specifications/default/gdbm-2.1.0.gemspec
+%{gem_dir}/specifications/default/getoptlong-0.1.0.gemspec
+%{gem_dir}/specifications/default/ipaddr-1.2.2.gemspec
+%{gem_dir}/specifications/default/logger-1.4.2.gemspec
+%{gem_dir}/specifications/default/matrix-0.2.0.gemspec
+%{gem_dir}/specifications/default/mutex_m-0.1.0.gemspec
+%{gem_dir}/specifications/default/net-pop-0.1.0.gemspec
+%{gem_dir}/specifications/default/net-smtp-0.1.0.gemspec
+%{gem_dir}/specifications/default/observer-0.1.0.gemspec
+%{gem_dir}/specifications/default/open3-0.1.0.gemspec
+%{gem_dir}/specifications/default/ostruct-0.2.0.gemspec
+%{gem_dir}/specifications/default/prime-0.1.1.gemspec
+%{gem_dir}/specifications/default/pstore-0.1.0.gemspec
+%{gem_dir}/specifications/default/readline-0.0.2.gemspec
+%{gem_dir}/specifications/default/readline-ext-0.1.0.gemspec
+%{gem_dir}/specifications/default/reline-0.1.2.gemspec
+%{gem_dir}/specifications/default/rexml-3.2.3.gemspec
+%{gem_dir}/specifications/default/rss-0.2.8.gemspec
 %{gem_dir}/specifications/default/sdbm-1.0.0.gemspec
-%{gem_dir}/specifications/default/stringio-0.0.1.gemspec
-%{gem_dir}/specifications/default/strscan-1.0.0.gemspec
-%{gem_dir}/specifications/default/webrick-1.4.2.gemspec
-%{gem_dir}/specifications/default/zlib-1.0.0.gemspec
+%{gem_dir}/specifications/default/singleton-0.1.0.gemspec
+%{gem_dir}/specifications/default/stringio-0.1.0.gemspec
+%{gem_dir}/specifications/default/strscan-1.0.3.gemspec
+%{gem_dir}/specifications/default/timeout-0.1.0.gemspec
+%{gem_dir}/specifications/default/tracer-0.1.0.gemspec
+%{gem_dir}/specifications/default/uri-0.10.0.gemspec
+%{gem_dir}/specifications/default/webrick-1.6.0.gemspec
+%{gem_dir}/specifications/default/yaml-0.1.0.gemspec
+%{gem_dir}/specifications/default/zlib-1.1.0.gemspec
+
+%{ruby_libdir}/csv
+%{ruby_libdir}/delegate
+%{ruby_libdir}/did_you_mean
+%{ruby_libdir}/getoptlong
+%{ruby_libdir}/logger
+%{ruby_libdir}/observer
+%{ruby_libdir}/open3
+%{ruby_libdir}/ostruct
+%{ruby_libdir}/pstore
+%{ruby_libdir}/reline
+%{ruby_libdir}/singleton
+%{ruby_libdir}/timeout
+%{ruby_libdir}/tracer
 
 %files -n rubygems-devel
 %{_rpmconfigdir}/macros.d/macros.rubygems
@@ -993,6 +1044,8 @@ make check TESTS="-v $DISABLE_TESTS"
 %{_bindir}/irb
 %{ruby_libdir}/irb.rb
 %{ruby_libdir}/irb
+%{gem_dir}/gems/irb-%{irb_version}/exe/irb
+%{gem_dir}/specifications/default/irb-%{irb_version}.gemspec
 %{_mandir}/man1/irb.1*
 
 %files -n rubygem-rdoc
@@ -1018,7 +1071,7 @@ make check TESTS="-v $DISABLE_TESTS"
 %files -n rubygem-did_you_mean
 %{gem_dir}/gems/did_you_mean-%{did_you_mean_version}
 %exclude %{gem_dir}/gems/did_you_mean-%{did_you_mean_version}/.*
-%{gem_dir}/specifications/did_you_mean-%{did_you_mean_version}.gemspec
+%{gem_dir}/specifications/default/did_you_mean-%{did_you_mean_version}.gemspec
 
 %files -n rubygem-io-console
 %{ruby_libdir}/io
@@ -1080,3 +1133,21 @@ make check TESTS="-v $DISABLE_TESTS"
 %{gem_dir}/gems/xmlrpc-%{xmlrpc_version}/lib
 %{gem_dir}/gems/xmlrpc-%{xmlrpc_version}/xmlrpc.gemspec
 %{gem_dir}/specifications/xmlrpc-%{xmlrpc_version}.gemspec
+
+%files -n rubygem-bundler
+%{_bindir}/bundle
+%{_bindir}/bundler
+%{gem_dir}/gems/bundler-%{bundler_version}
+%{_mandir}/man1/bundle*.1*
+%{_mandir}/man5/gemfile.5*
+%{gem_dir}/specifications/default/bundler-%{bundler_version}.gemspec
+%{ruby_libdir}/bundler
+ 
+%files -n rubygem-racc
+%{ruby_libdir}/racc*
+%{ruby_libarchdir}/racc
+%{_bindir}/racc
+%{_bindir}/racc2y
+%{_bindir}/y2racc
+%{gem_dir}/gems/racc-%{racc_version}
+%{gem_dir}/specifications/default/racc-%{racc_version}.gemspec
