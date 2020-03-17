@@ -1,0 +1,12 @@
+diff -ur ruby-2.7.0-patch/lib/mkmf.rb ruby-2.7.0/lib/mkmf.rb
+--- ruby-2.7.0-patch/lib/mkmf.rb	2020-01-19 23:23:49.157623373 +0300
++++ ruby-2.7.0/lib/mkmf.rb	2020-01-19 23:40:23.899139342 +0300
+@@ -482,7 +482,7 @@
+   end
+ 
+   def link_config(ldflags, opt="", libpath=$DEFLIBPATH|$LIBPATH)
+-    librubyarg = $extmk ? $LIBRUBYARG_STATIC : "$(LIBRUBYARG)"
++    librubyarg = $extmk ? $LIBRUBYARG_SHARED : "$(LIBRUBYARG)"
+     conf = RbConfig::CONFIG.merge('hdrdir' => $hdrdir.quote,
+                                   'src' => "#{conftest_source}",
+                                   'arch_hdrdir' => $arch_hdrdir.quote,

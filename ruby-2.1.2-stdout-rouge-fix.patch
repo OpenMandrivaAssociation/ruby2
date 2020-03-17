@@ -1,0 +1,35 @@
+diff -ur ruby-2.7.0-patch/lib/mkmf.rb ruby-2.7.0/lib/mkmf.rb
+--- ruby-2.7.0-patch/lib/mkmf.rb	2020-01-19 23:23:49.157623373 +0300
++++ ruby-2.7.0/lib/mkmf.rb	2020-01-20 00:09:13.072134140 +0300
+@@ -310,8 +310,6 @@
+   module Logging
+     @log = nil
+     @logfile = 'mkmf.log'
+-    @orgerr = $stderr.dup
+-    @orgout = $stdout.dup
+     @postpone = 0
+     @quiet = $extmk
+ 
+@@ -326,12 +324,20 @@
+ 
+     def self::open
+       log_open
++      orgerr = $stderr.dup
++      orgout = $stdout.dup
+       $stderr.reopen(@log)
+       $stdout.reopen(@log)
+       yield
+     ensure
+-      $stderr.reopen(@orgerr)
+-      $stdout.reopen(@orgout)
++      if orgerr
++        $stderr.reopen(orgerr)
++        orgerr.close
++      end
++      if orgout
++        $stdout.reopen(orgout)
++        orgout.close
++      end
+     end
+ 
+     def self::message(*s)
