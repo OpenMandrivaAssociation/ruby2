@@ -34,7 +34,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	2.7.0
-Release:	7
+Release:	8
 License:	Ruby or GPLv2+
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -144,6 +144,8 @@ This package contains the Ruby's documentation
 Summary:	Development file for the powerful language Ruby
 Group:		Development/Ruby
 Requires:	%{name} = %{EVRD}
+%define olddevname %mklibname -d ruby
+%rename %{olddevname}
 
 %description devel
 Ruby is the interpreted scripting language for quick and
