@@ -196,7 +196,11 @@ autoreconf -fi
 
 # Force verconf.h regeneration (for build with frozen time)
 [ -f verconf.h ] && rm verconf.h
+%ifarch %{ix86}
+%make_build COPY="cp -p" Q= EXTLDFLAGS="--rtlib=compiler-rt -Wl,-z,notext"
+%else
 %make_build COPY="cp -p" Q=
+%endif
 
 %install
 %make_install V=1
