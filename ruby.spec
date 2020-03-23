@@ -34,7 +34,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby
 Version:	2.7.0
-Release:	8
+Release:	9
 License:	Ruby or GPLv2+
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -59,10 +59,9 @@ Patch6:		ruby-2.7.0-Remove-RubyGems-dependency.patch
 # ROSA, https://github.com/ruby/ruby/pull/2862
 Patch7:   0001-Fix-linkage-of-popen_deadlock-test.patch
 # Gentoo
-PAtch8:   010-default-gem-location.patch
 Patch9:   ruby-2.6.0-config-support-include-directive.patch
 BuildRequires:	byacc
-BuildRequires:	db52-devel
+BuildRequires:	db18-devel
 BuildRequires:	gdbm-devel
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(ncurses)
@@ -165,8 +164,7 @@ This package contains the Ruby's devel files.
 #----------------------------------------------------------------------------
 
 %prep
-%setup -q
-%autopatch -p1
+%autosetup -p1
 
 # Remove bundled libraries to be sure they are not used.
 rm -rf ext/psych/yaml
@@ -176,6 +174,8 @@ rm -rf ext/fiddle/libffi*
 autoreconf -fi
 %configure \
 	--enable-shared \
+	--enable-rubygems \
+	--without-baseruby \
 	--disable-rpath \
 	--enable-pthread \
 	--with-setjmp-type=setjmp \
@@ -191,15 +191,15 @@ autoreconf -fi
 	--with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
 	--with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
 	--with-rubygemsdir='%{fedora_rubygems_dir}' \
-	--
+	--with-ruby-pc='%{name}-%{subver}.pc' \
+	--with-compress-debug-sections=no
 
 # Force verconf.h regeneration (for build with frozen time)
 [ -f verconf.h ] && rm verconf.h
-%make COPY="cp -p" Q=
+%make_build COPY="cp -p" Q=
 
 %install
-# gems will go into $GEM_DESTDIR/gems == %%fedora_rubygems_dir
-%make V=1 DESTDIR=%{buildroot} GEM_DESTDIR=%{_datadir}/ruby install
+%make_install V=1
 
 install -d %{buildroot}%{_docdir}/%{name}-%{version}
 cp -a COPYING* ChangeLog README* sample %{buildroot}%{_docdir}/%{name}-%{version}
@@ -221,9 +221,9 @@ cat text.list | xargs grep -n '^#!' | grep ':1:#!' | cut -d: -f1 >shebang.list
 cat shebang.list | xargs sed -i -e 's|/usr/local/bin|/usr/bin|; s|\./ruby|/usr/bin/ruby|'
 cat shebang.list | xargs chmod 0755
 
-pushd %{buildroot}%{_libdir}/pkgconfig/
-ln -s ruby-%{subver}.pc ruby.pc
-popd
+mkdir -p %{buildroot}%{_libdir}/pkgconfig/
+cp ruby-%{subver}.pc %{buildroot}%{_libdir}/pkgconfig/
+ln -s ruby-%{subver}.pc %{buildroot}%{_libdir}/pkgconfig/ruby.pc
 
 #install macros ruby and rubygems 
 mkdir -p %{buildroot}%{_rpmconfigdir}/macros.d
