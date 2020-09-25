@@ -65,7 +65,7 @@ BuildRequires:	db18-devel
 BuildRequires:	gdbm-devel
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(ncurses)
-BuildRequires:	openssl-devel
+BuildRequires:	pkgconfig(libssl)
 BuildRequires:	pkgconfig(yaml-0.1)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	glibc-static-devel
