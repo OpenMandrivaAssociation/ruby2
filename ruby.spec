@@ -57,9 +57,9 @@ Patch4:		ruby-2.1.0-Enable-configuration-of-archlibdir.patch
 Patch5:		ruby-2.1.0-custom-rubygems-location.patch
 Patch6:		ruby-2.7.0-Remove-RubyGems-dependency.patch
 # ROSA, https://github.com/ruby/ruby/pull/2862
-Patch7:   0001-Fix-linkage-of-popen_deadlock-test.patch
+Patch7:		0001-Fix-linkage-of-popen_deadlock-test.patch
 # Gentoo
-Patch9:   ruby-2.6.0-config-support-include-directive.patch
+Patch9:		ruby-2.6.0-config-support-include-directive.patch
 BuildRequires:	byacc
 BuildRequires:	db18-devel
 BuildRequires:	gdbm-devel
@@ -105,7 +105,7 @@ Perl).  It is simple, straight-forward, and extensible.
 
 %define libname %mklibname ruby %{subver}
 
-%package -n	%{libname}
+%package -n %{libname}
 Summary:	Shared main library for ruby %{subver}
 Group:		System/Libraries
 
@@ -238,7 +238,6 @@ install -D -m 644 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/fileattrs/rubygems.att
 install -m 755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}
 install -m 755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}
 install -m 755 %{SOURCE7} %{buildroot}%{_rpmconfigdir}
-
 
 %check
 make test
