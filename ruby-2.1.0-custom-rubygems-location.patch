@@ -1,23 +1,9 @@
-From 94da59aafacc6a9efe829529eb51385588d6f149 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
-Date: Fri, 11 Nov 2011 13:14:45 +0100
-Subject: [PATCH] Allow to install RubyGems into custom location, outside of
- Ruby tree.
-
----
- configure.ac            |  5 +++++
- loadpath.c              |  4 ++++
- template/verconf.h.tmpl |  3 +++
- tool/rbinstall.rb       | 10 ++++++++++
- 4 files changed, 22 insertions(+)
-
-diff --git a/configure.ac b/configure.ac
-index 93af30321d..bc13397e0e 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -3776,6 +3776,10 @@ AC_ARG_WITH(vendorarchdir,
+diff -up ruby-2.7.4/configure.ac.4~ ruby-2.7.4/configure.ac
+--- ruby-2.7.4/configure.ac.4~	2021-09-11 02:45:50.416712734 +0200
++++ ruby-2.7.4/configure.ac	2021-09-11 02:45:50.418712728 +0200
+@@ -3791,6 +3791,10 @@ AC_ARG_WITH(vendorarchdir,
              [vendorarchdir=$withval],
-             [vendorarchdir=${multiarch+'${rubysitearchprefix}/vendor_ruby'${ruby_version_dir}}${multiarch-'${vendorlibdir}/${sitearch}'}])
+             [vendorarchdir=${multiarch+'${rubysitearchprefix}/vendor_ruby/${ruby_version}'}${multiarch-'${vendorlibdir}/${sitearch}'}])
  
 +AC_ARG_WITH(rubygemsdir,
 +           AS_HELP_STRING([--with-rubygemsdir=DIR], [custom rubygems directory]),
@@ -26,7 +12,7 @@ index 93af30321d..bc13397e0e 100644
  AS_IF([test "${LOAD_RELATIVE+set}"], [
      AC_DEFINE_UNQUOTED(LOAD_RELATIVE, $LOAD_RELATIVE)
      RUBY_EXEC_PREFIX=''
-@@ -3800,6 +3804,7 @@ AC_SUBST(sitearchdir)dnl
+@@ -3814,6 +3818,7 @@ AC_SUBST(sitearchdir)dnl
  AC_SUBST(vendordir)dnl
  AC_SUBST(vendorlibdir)dnl
  AC_SUBST(vendorarchdir)dnl
@@ -34,12 +20,11 @@ index 93af30321d..bc13397e0e 100644
  
  AC_SUBST(CONFIGURE, "`echo $0 | sed 's|.*/||'`")dnl
  AC_SUBST(configure_args, "`echo "${ac_configure_args}" | sed 's/\\$/$$/g'`")dnl
-diff --git a/loadpath.c b/loadpath.c
-index 623dc9d..74c5d9e 100644
---- a/loadpath.c
-+++ b/loadpath.c
-@@ -94,6 +94,10 @@ const char ruby_initial_load_paths[] =
- #endif
+diff -up ruby-2.7.4/loadpath.c.4~ ruby-2.7.4/loadpath.c
+--- ruby-2.7.4/loadpath.c.4~	2021-07-07 12:48:22.000000000 +0200
++++ ruby-2.7.4/loadpath.c	2021-09-11 02:45:50.418712728 +0200
+@@ -82,6 +82,10 @@ const char ruby_initial_load_paths[] =
+     RUBY_VENDOR_LIB "\0"
  #endif
  
 +#ifdef RUBYGEMS_DIR
@@ -49,10 +34,9 @@ index 623dc9d..74c5d9e 100644
      RUBY_LIB "\0"
  #ifdef RUBY_THINARCH
      RUBY_ARCH_LIB_FOR(RUBY_THINARCH) "\0"
-diff --git a/template/verconf.h.tmpl b/template/verconf.h.tmpl
-index 79c003e..34f2382 100644
---- a/template/verconf.h.tmpl
-+++ b/template/verconf.h.tmpl
+diff -up ruby-2.7.4/template/verconf.h.tmpl.4~ ruby-2.7.4/template/verconf.h.tmpl
+--- ruby-2.7.4/template/verconf.h.tmpl.4~	2021-07-07 12:48:22.000000000 +0200
++++ ruby-2.7.4/template/verconf.h.tmpl	2021-09-11 02:45:50.418712728 +0200
 @@ -36,6 +36,9 @@
  % if C["RUBY_SEARCH_PATH"]
  #define RUBY_SEARCH_PATH		"${RUBY_SEARCH_PATH}"
@@ -63,19 +47,18 @@ index 79c003e..34f2382 100644
  %
  % R = {}
  % R["ruby_version"] = '"RUBY_LIB_VERSION"'
-diff --git a/tool/rbinstall.rb b/tool/rbinstall.rb
-index b47b6e1..0b99408 100755
---- a/tool/rbinstall.rb
-+++ b/tool/rbinstall.rb
-@@ -338,6 +338,7 @@ def CONFIG.[](name, mandatory = false)
- sitearchlibdir = CONFIG["sitearchdir"]
- vendorlibdir = CONFIG["vendorlibdir"]
- vendorarchlibdir = CONFIG["vendorarchdir"]
+diff -up ruby-2.7.4/tool/rbinstall.rb.4~ ruby-2.7.4/tool/rbinstall.rb
+--- ruby-2.7.4/tool/rbinstall.rb.4~	2021-07-07 12:48:22.000000000 +0200
++++ ruby-2.7.4/tool/rbinstall.rb	2021-09-11 02:47:16.691466122 +0200
+@@ -343,6 +343,7 @@ if CONFIG["vendordir"]
+   vendorlibdir = CONFIG["vendorlibdir"]
+   vendorarchlibdir = CONFIG["vendorarchdir"]
+ end
 +rubygemsdir = CONFIG["rubygemsdir"]
  mandir = CONFIG["mandir", true]
  docdir = CONFIG["docdir", true]
  enable_shared = CONFIG["ENABLE_SHARED"] == 'yes'
-@@ -565,7 +566,16 @@ def stub
+@@ -570,7 +571,16 @@ end
  install?(:local, :comm, :lib) do
    prepare "library scripts", rubylibdir
    noinst = %w[*.txt *.rdoc *.gemspec]
@@ -92,6 +75,3 @@ index b47b6e1..0b99408 100755
  end
  
  install?(:local, :comm, :hdr, :'comm-hdr') do
--- 
-1.8.3.1
-

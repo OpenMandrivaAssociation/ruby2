@@ -33,8 +33,8 @@
 
 Summary:	Object Oriented Script Language
 Name:		ruby
-Version:	2.7.0
-Release:	10
+Version:	2.7.4
+Release:	1
 License:	Ruby or GPLv2+
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -50,6 +50,7 @@ Source7:	rubygems.req
 # Use shared libs as opposed to static for mkmf
 # See bug rhbz#428384
 Patch1:		ruby-2.1.2-mkmf-use-shared.patch
+Patch2:		ruby-2.7.4-openssl-3.0.patch
 # http://redmine.ruby-lang.org/issues/5108
 Patch3:		ruby-2.1.2-stdout-rouge-fix.patch
 # From Fedora
@@ -58,8 +59,6 @@ Patch5:		ruby-2.1.0-custom-rubygems-location.patch
 Patch6:		ruby-2.7.0-Remove-RubyGems-dependency.patch
 # ROSA, https://github.com/ruby/ruby/pull/2862
 Patch7:		0001-Fix-linkage-of-popen_deadlock-test.patch
-# Gentoo
-Patch9:		ruby-2.6.0-config-support-include-directive.patch
 BuildRequires:	byacc
 BuildRequires:	db18-devel
 BuildRequires:	gdbm-devel
