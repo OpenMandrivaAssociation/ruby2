@@ -186,10 +186,10 @@ echo "$gemspec_remove_file_script" | ruby \
 unset -v gemspec_remove_file_script \
 %{nil}
 
-##### From Mageia
+##### From Mageia (with some modifications to match gem 3.1.6)
 %gem_build %{_bindir}/gem build ../%{gem_name}-%{version}.gemspec \
 	%{_bindir}/gem install %{gem_name}-%{version}.gem -V --local \\\
-		--env-shebang --rdoc --ri --force --ignore-dependencies \\\
+		--env-shebang --document rdoc,ri --force --ignore-dependencies \\\
 		--install-dir %{gem_dir} \\\
 		--bindir %{_bindir} \\\
 		--build-root .
