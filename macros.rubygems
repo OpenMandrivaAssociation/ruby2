@@ -1,38 +1,61 @@
-##### From Fedora
+##### Originally from Fedora, but with severe modifications.
+##### This version is far more powerful and less error prone.
+%gem_name	%(echo %{name} |cut -d- -f2-)
 
 # The RubyGems root folder.
-%gem_dir %{_datadir}/ruby/gems
-%gem_archdir %{_libdir}/gems
+%gem_dir	%{ruby_gemdir}
+%gem_archdir	%{_libdir}/gems
 
 # Common gem locations and files.
-%gem_instdir %{gem_dir}/gems/%{gem_name}-%{version}%{?prerelease}
-%gem_extdir_mri %{gem_archdir}/%{name}/%{gem_name}-%{version}%{?prerelease}
-%gem_libdir %{gem_instdir}/lib
-%gem_cache %{gem_dir}/cache/%{gem_name}-%{version}%{?prerelease}.gem
-%gem_spec %{gem_dir}/specifications/%{gem_name}-%{version}%{?prerelease}.gemspec
-%gem_docdir %{gem_dir}/doc/%{gem_name}-%{version}%{?prerelease}
+%gem_instdir	%{gem_dir}/gems/%{gem_name}-%{version}%{?prerelease}
+%gem_extdir_mri	%{gem_archdir}/%{name}/%{gem_name}-%{version}%{?prerelease}
+%gem_libdir	%{gem_instdir}/lib
+%gem_cache	%{gem_dir}/cache/%{gem_name}-%{version}%{?prerelease}.gem
+%gem_spec	%{gem_dir}/specifications/%{gem_name}-%{version}%{?prerelease}.gemspec
+%gem_docdir	%{gem_dir}/doc/%{gem_name}-%{version}%{?prerelease}
 
+%gem_files \
+%{gem_instdir} \
+%{gem_cache} \
+%{gem_spec} \
+%optional %{gem_dir}/extensions/*/*/%{gem_name}-%{version}%{?prerelease} \
+\
+%package doc \
+Summary:	Documents, RDoc and RI for %{name} \
+Group:		Books/Computer books \
+Suggests:	%{name} = %{EVRD} \
+\
+%description doc \
+Documents, RDoc and RI for %{name} \
+\
+%files doc \
+%doc %{gem_docdir} \
+%{nil}
 
-# %gem_install - Install gem into appropriate directory.
+# %gem_build - Build the gem and install it into a local root
 #
-# Usage: %gem_install [options]
+# Usage: %gem_build [options]
 #
 # -n <gem_file>      Overrides gem file name for installation.
 # -d <install_dir>   Set installation directory.
 #
-%gem_install(d:n:) \
-mkdir -p %{-d*}%{!?-d:.%{gem_dir}} \
-\
-CONFIGURE_ARGS="--with-cflags='%{optflags}' --with-cxxflags='%{optflags}' $CONFIGURE_ARGS" \\\
-gem install \\\
-        -V \\\
-        --local \\\
-        --build-root %{-d*}%{!?-d:.} \\\
-        --force \\\
-        --document=ri,rdoc \\\
-        %{-n*}%{!?-n:%{gem_name}-%{version}%{?prerelease}.gem} \
-%{nil}
+%gem_build(d:n:) \
+	gem build ../%{gem_name}-%{version}.gemspec; \
+	mkdir -p %{-d*}%{!?-d:$(pwd)/DESTDIR%{gem_dir}}; \
+	CONFIGURE_ARGS="--with-cflags='%{optflags}' --with-cxxflags='%{optflags}' $CONFIGURE_ARGS" \\\
+	gem install \\\
+	        -V \\\
+	        --local \\\
+	        --build-root %{-d*}%{!?-d:$(pwd)/DESTDIR} \\\
+	        --force \\\
+	        --document=ri,rdoc \\\
+	        %{-n*}%{!?-n:%{gem_name}-%{version}%{?prerelease}.gem} \
+	%{nil}
 
+# %gem_install - Install gem into appropriate directory.
+%gem_install \
+	mkdir -p %{buildroot} \
+	mv DESTDIR/* %{buildroot}/
 
 # The 'read' command in %%gemspec_* macros is not essential, but it is usefull
 # to make the sript appear in build log.
@@ -185,11 +208,3 @@ EOR\
 echo "$gemspec_remove_file_script" | ruby \
 unset -v gemspec_remove_file_script \
 %{nil}
-
-##### From Mageia (with some modifications to match gem 3.1.6)
-%gem_build %{_bindir}/gem build ../%{gem_name}-%{version}.gemspec \
-	%{_bindir}/gem install %{gem_name}-%{version}.gem -V --local \\\
-		--env-shebang --document rdoc,ri --force --ignore-dependencies \\\
-		--install-dir %{gem_dir} \\\
-		--bindir %{_bindir} \\\
-		--build-root .
