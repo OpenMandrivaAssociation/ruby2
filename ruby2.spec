@@ -4,7 +4,7 @@
 ### (Based on Fedora)
 # https://src.fedoraproject.org/rpms/ruby/blob/master/f/macros.ruby
 # sed -e 's,^%,%%define fedora_,g'
-%define fedora_ruby_libarchdir %{_libdir}/%{name}
+%define fedora_ruby_libarchdir %{_libdir}/ruby
 # Arch-dependent *.so must not be in /usr/share
 #define fedora_ruby_libdir %%{_datadir}/%%{name}
 %define fedora_ruby_libdir %{fedora_ruby_libarchdir}
@@ -32,9 +32,9 @@
 %global _default_patch_fuzz 2
 
 Summary:	Object Oriented Script Language
-Name:		ruby
-Version:	2.7.4
-Release:	3
+Name:		ruby2
+Version:	2.7.6
+Release:	1
 License:	Ruby or GPLv2+
 Group:		Development/Ruby
 Url:		http://www.ruby-lang.org/
@@ -69,6 +69,7 @@ BuildRequires:	pkgconfig(yaml-0.1)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	glibc-static-devel
 Provides:	rubygems = %{EVRD}
+Provides:	rubygems2 = %{EVRD}
 Provides:	ruby(abi) = %{abiver}
 
 %description
@@ -163,7 +164,7 @@ This package contains the Ruby's devel files.
 #----------------------------------------------------------------------------
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n ruby-%{version}
 
 # Remove bundled libraries to be sure they are not used.
 rm -rf ext/psych/yaml
@@ -190,7 +191,7 @@ autoreconf -fi
 	--with-sitearchhdrdir='$(sitehdrdir)/$(arch)' \
 	--with-vendorarchhdrdir='$(vendorhdrdir)/$(arch)' \
 	--with-rubygemsdir='%{fedora_rubygems_dir}' \
-	--with-ruby-pc='%{name}-%{subver}.pc' \
+	--with-ruby-pc='ruby-%{subver}.pc' \
 	--with-compress-debug-sections=no
 
 # Force verconf.h regeneration (for build with frozen time)

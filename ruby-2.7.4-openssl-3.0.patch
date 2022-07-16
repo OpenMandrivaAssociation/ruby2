@@ -9,3 +9,22 @@ diff -up ruby-2.7.4/ext/openssl/ossl_pkey_rsa.c.omv~ ruby-2.7.4/ext/openssl/ossl
      DefRSAConst(NO_PADDING);
      DefRSAConst(PKCS1_OAEP_PADDING);
  
+diff -up ruby-2.7.6/ext/openssl/extconf.rb.omv~ ruby-2.7.6/ext/openssl/extconf.rb
+--- ruby-2.7.6/ext/openssl/extconf.rb.omv~	2022-07-16 16:42:57.730338461 +0200
++++ ruby-2.7.6/ext/openssl/extconf.rb	2022-07-16 16:43:27.904526044 +0200
+@@ -103,12 +103,12 @@ version_ok = if have_macro("LIBRESSL_VER
+   checking_for("LibreSSL version >= 2.5.0") {
+     try_static_assert("LIBRESSL_VERSION_NUMBER >= 0x20500000L", "openssl/opensslv.h") }
+ else
+-  checking_for("OpenSSL version >= 1.0.1 and < 3.0.0") {
++  checking_for("OpenSSL version >= 1.0.1 and < 4.0.0") {
+     try_static_assert("OPENSSL_VERSION_NUMBER >= 0x10001000L", "openssl/opensslv.h") &&
+-    !try_static_assert("OPENSSL_VERSION_MAJOR >= 3", "openssl/opensslv.h") }
++    !try_static_assert("OPENSSL_VERSION_MAJOR >= 4", "openssl/opensslv.h") }
+ end
+ unless version_ok
+-  raise "OpenSSL >= 1.0.1, < 3.0.0 or LibreSSL >= 2.5.0 is required"
++  raise "OpenSSL >= 1.0.1, < 4.0.0 or LibreSSL >= 2.5.0 is required"
+ end
+ 
+ # Prevent wincrypt.h from being included, which defines conflicting macro with openssl/x509.h
