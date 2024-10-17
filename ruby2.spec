@@ -37,7 +37,7 @@ Version:	2.7.6
 Release:	2
 License:	Ruby or GPLv2+
 Group:		Development/Ruby
-Url:		http://www.ruby-lang.org/
+Url:		https://www.ruby-lang.org/
 Source0:	https://cache.ruby-lang.org/pub/ruby/%{subver}/ruby-%{version}.tar.xz
 Source1:	macros.ruby
 Source2:	macros.rubygems
