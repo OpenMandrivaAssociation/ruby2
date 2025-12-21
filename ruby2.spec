@@ -59,6 +59,11 @@ Patch5:		ruby-2.1.0-custom-rubygems-location.patch
 Patch6:		ruby-2.7.0-Remove-RubyGems-dependency.patch
 # ROSA, https://github.com/ruby/ruby/pull/2862
 Patch7:		0001-Fix-linkage-of-popen_deadlock-test.patch
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	byacc
 BuildRequires:	db18-devel
 BuildRequires:	gdbm-devel
