@@ -34,7 +34,7 @@
 Summary:	Object Oriented Script Language
 Name:		ruby2
 Version:	2.7.6
-Release:	2
+Release:	3
 License:	Ruby or GPLv2+
 Group:		Development/Ruby
 Url:		https://www.ruby-lang.org/
